@@ -11,18 +11,19 @@ import {
   Utensils,
   Sparkles,
 } from "lucide-react";
-import towelImg from "../../public/products/towel.jpg";
-import cratesImg from "../../public/products/crates.jpg";
-import fryingpanImg from "../../public/products/fryingpan.jpg";
-import ledLampImg from "../../public/products/LEDlamp.jpg";
-import blenderImg from "../../public/products/blender.jpg";
-import cushionImg from "../../public/products/cushion.jpg";
-import steelBottlesImg from "../../public/products/SteelBottles.jpg";
-import mugImg from "../../public/products/Mug.jpg";
-import blueBasketImg from "../../public/products/blueBasket.jpg";
-import penholderImg from "../../public/products/penholder.jpg";
-import backpackImg from "../../public/products/Bagpack.jpg";
-import pinkBasketImg from "../../public/products/pinkBasket.jpg";
+const towelImg = "/Products/towel.jpg";
+const cratesImg = "/Products/crates.jpg";
+const fryingpanImg = "/Products/fryingpan.jpg";
+const ledLampImg = "/Products/LEDlamp.jpg";
+const blenderImg = "/Products/blender.jpg";
+const cushionImg = "/Products/cushion.jpg";
+const steelBottlesImg = "/Products/SteelBottles.jpg";
+const mugImg = "/Products/Mug.jpg";
+const blueBasketImg = "/Products/blueBasket.jpg";
+const penholderImg = "/Products/penholder.jpg";
+const backpackImg = "/Products/Bagpack.jpg";
+const pinkBasketImg = "/Products/pinkBasket.jpg";
+
 
 export const products = [
   {

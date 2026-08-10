@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: #231f20;
+  background: #fffdf7;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.font-display {
+  font-family: "Poppins", sans-serif;
+}
+
+/* dotted halftone pattern used behind the hero art */
+.dot-pattern {
+  background-image: radial-gradient(rgba(35, 31, 32, 0.14) 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+
+/* soft diagonal shimmer used on the WOW DEALS pill */
+.shimmer-bg {
+  background: linear-gradient(
+    110deg,
+    #e31e24 40%,
+    #ff5a5f 50%,
+    #e31e24 60%
+  );
+  background-size: 200% 100%;
+}
+
+/* utility: hide scrollbar but keep scrollability (mobile category strip) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* accessible focus ring */
+:focus-visible {
+  outline: 3px solid #f5b700;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

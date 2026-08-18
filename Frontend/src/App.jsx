@@ -21,6 +21,7 @@ import WishlistPage from "./components/WishlistPage.jsx";
 import CheckoutPage from "./components/CheckoutPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import AccountPage from "./components/AccountPage.jsx";
+import HomeDeals from "./components/HomeDeals.jsx";
 
 function getRouteFromHash() {
   const hash = decodeURIComponent(window.location.hash.replace("#", ""));
@@ -186,7 +187,6 @@ export default function App() {
 
       {/* Category nav strip */}
       <TopNav
-        onOpenDrawer={handleOpenDrawer}
         currentPage={currentPage}
         onNavigate={navigateTo}
       />
@@ -196,6 +196,7 @@ export default function App() {
         {currentPage === "home" && (
           <>
             <HeroSection onNavigate={navigateTo} />
+            <HomeDeals onNavigate={navigateTo} />
             <CategoryGrid onNavigate={navigateTo} />
             <FeaturesBar />
             <ProductSpotlight onNavigate={navigateTo} />

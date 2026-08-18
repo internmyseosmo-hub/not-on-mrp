@@ -11,17 +11,10 @@ const links = [
   { label: "Contact Us", hasDropdown: false },
 ];
 
-export default function TopNav({ onOpenDrawer, currentPage = "home", onNavigate }) {
+export default function TopNav({ currentPage = "home", onNavigate }) {
   return (
     <div className="bg-brand-yellow-dark">
       <div className="mx-auto flex max-w-[1440px] items-center gap-4 px-4 py-2.5 sm:gap-6 sm:px-6 lg:px-10">
-        <button
-          onClick={onOpenDrawer}
-          className="group flex shrink-0 items-center gap-2 font-display text-xs font-bold text-brand-ink transition-transform active:scale-95 sm:text-sm cursor-pointer"
-        >
-          <Menu size={19} className="transition-transform duration-300 group-hover:rotate-90" />
-          <span>ALL CATEGORIES</span>
-        </button>
 
         <ul className="hidden items-center gap-4 text-xs font-semibold text-brand-ink lg:flex lg:text-sm xl:gap-6">
           {links.map(({ label, hasDropdown }) => (

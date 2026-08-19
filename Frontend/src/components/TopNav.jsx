@@ -7,6 +7,7 @@ const links = [
   { label: "Our Products", hasDropdown: false },
   { label: "Deals & Offers", hasDropdown: false },
   { label: "New Arrivals", hasDropdown: false },
+  { label: "Blog", hasDropdown: false },
   { label: "Franchise Enquiries", hasDropdown: false },
   { label: "Contact Us", hasDropdown: false },
 ];
@@ -27,6 +28,7 @@ export default function TopNav({ currentPage = "home", onNavigate }) {
                 else if (label === "New Arrivals") onNavigate?.("new-arrivals");
                 else if (label === "Deals & Offers") onNavigate?.("deals");
                 else if (label === "Contact Us") onNavigate?.("contact");
+                else if (label === "Blog") onNavigate?.("blog");
                 else if (label === "Our Products") {
                   onNavigate?.("catalog");
                 }
@@ -40,7 +42,8 @@ export default function TopNav({ currentPage = "home", onNavigate }) {
                   (label === "Our Products" && currentPage === "catalog") ||
                   (label === "Deals & Offers" && currentPage === "deals") ||
                   (label === "Contact Us" && currentPage === "contact") ||
-                  (label === "New Arrivals" && currentPage === "new-arrivals")
+                  (label === "New Arrivals" && currentPage === "new-arrivals") ||
+                  (label === "Blog" && currentPage === "blog")
                     ? "text-white font-bold"
                     : ""
                 }`}
@@ -56,7 +59,8 @@ export default function TopNav({ currentPage = "home", onNavigate }) {
                   (label === "Home" && currentPage === "home") ||
                   (label === "Deals & Offers" && currentPage === "deals") ||
                   (label === "Contact Us" && currentPage === "contact") ||
-                  (label === "Our Products" && currentPage === "catalog")
+                  (label === "Our Products" && currentPage === "catalog") ||
+                  (label === "Blog" && currentPage === "blog")
                     ? "w-full"
                     : "w-0 group-hover:w-full"
                 }`}

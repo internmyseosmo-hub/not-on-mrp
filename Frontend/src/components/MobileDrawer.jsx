@@ -13,17 +13,19 @@ import {
   Sparkles,
   Phone,
   Grid,
+  FileText,
 } from "lucide-react";
 import { categories } from "../data/categories.js";
 
 const navLinks = [
-  { label: "Home", href: "#", icon: Home },
-  { label: "About Us", href: "#", icon: Info },
-  { label: "Our Products", href: "#", icon: Package },
-  { label: "Deals & Offers", href: "#", icon: TagIcon },
-  { label: "New Arrivals", href: "#", icon: Sparkles },
-  { label: "Franchise Enquiries", href: "#", icon: Phone },
-  { label: "Contact Us", href: "#", icon: Phone },
+  { label: "Home", icon: Home },
+  { label: "Our Products", icon: Package },
+  { label: "New Arrivals", icon: Sparkles },
+  { label: "Deals & Offers", icon: Zap },
+  { label: "About Us", icon: Info },
+  { label: "Blog", icon: FileText },
+  { label: "Contact Us", icon: Phone },
+  { label: "Franchise Enquiries", icon: Grid },
 ];
 
 function TagIcon(props) {
@@ -102,11 +104,12 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                           onClose();
                           if (label === "Franchise Enquiries") return;
                           if (label === "Home") onNavigate?.("home");
-                          else if (label === "About Us") onNavigate?.("about");
-                          else if (label === "Deals & Offers") onNavigate?.("deals");
-                          else if (label === "Contact Us") onNavigate?.("contact");
-                          else if (label === "New Arrivals") onNavigate?.("new-arrivals");
-                          else onNavigate?.("catalog");
+                          if (label === "Our Products") onNavigate?.("catalog");
+                          if (label === "Deals & Offers") onNavigate?.("deals");
+                          if (label === "Contact Us") onNavigate?.("contact");
+                          if (label === "New Arrivals") onNavigate?.("new-arrivals");
+                          if (label === "About Us") onNavigate?.("about");
+                          if (label === "Blog") onNavigate?.("blog");
                         }}
                         className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-ink transition-colors hover:bg-amber-50 active:bg-amber-100 text-left cursor-pointer"
                       >

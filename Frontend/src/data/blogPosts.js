@@ -1,0 +1,52 @@
+import { Sofa, Utensils, Package, Droplet } from "lucide-react";
+
+export const blogPosts = [
+  {
+    id: 1,
+    date: "18",
+    month: "MAY",
+    title: "10 Must-Have Home Essentials for a Comfortable Living",
+    description: "Simple picks that bring comfort, functionality and style to your home every day.",
+    content: "Creating a comfortable living space doesn't necessarily mean undertaking a massive renovation or spending a fortune. Often, it's the carefully chosen essentials that truly transform a house into a home. In this guide, we explore the top 10 items every home needs to maximize comfort and functionality.\n\nFirst on our list is quality seating. A good armchair or sofa is the cornerstone of any living room. It's where you relax after a long day, read your favorite book, or entertain guests. Look for pieces that offer both excellent lumbar support and soft, inviting fabrics. Additionally, don't underestimate the power of good lighting. A mix of ambient, task, and accent lighting can drastically alter the mood of a room, making it feel warm and welcoming.\n\nNext, focus on your sleep environment. Investing in a high-quality mattress and breathable linens can significantly improve your sleep quality, which in turn boosts your overall well-being. Finally, add personal touches like plants, art, and rugs. These elements add texture and personality, making the space uniquely yours.",
+    icon: Sofa,
+    iconBg: "bg-brand-yellow",
+    iconColor: "text-brand-ink",
+    image: "/yellow_armchair.png",
+  },
+  {
+    id: 2,
+    date: "15",
+    month: "MAY",
+    title: "Non-Stick vs Stainless Steel Cookware: Which is Better?",
+    description: "Compare the pros and cons to choose the best cookware for your kitchen.",
+    content: "When it comes to equipping your kitchen, one of the most common dilemmas is choosing between non-stick and stainless steel cookware. Both have their distinct advantages and ideal use cases, making the decision largely dependent on your cooking style and habits.\n\nNon-stick pans are celebrated for their ease of use and cleanup. They are perfect for delicate foods like eggs, pancakes, and flaky fish, which tend to stick to uncoated surfaces. Furthermore, they allow for healthier cooking since you need significantly less oil or butter. However, they are generally less durable than stainless steel and cannot withstand very high heat or metal utensils, which can scratch the coating.\n\nStainless steel, on the other hand, is the workhorse of professional kitchens. It is incredibly durable, resistant to rust and scratching, and can handle high heat, making it excellent for searing meats and deglazing pan sauces. While it requires a bit more technique to prevent sticking, its longevity and versatility often make it a superior choice for serious home cooks. Ultimately, having a mix of both in your kitchen is often the best strategy.",
+    icon: Utensils,
+    iconBg: "bg-red-400",
+    iconColor: "text-white",
+    image: "/red_pan.png",
+  },
+  {
+    id: 3,
+    date: "12",
+    month: "MAY",
+    title: "Smart Storage Ideas to Declutter Your Space",
+    description: "Creative and practical storage solutions to make every corner of your home useful.",
+    content: "A cluttered home can often lead to a cluttered mind. Finding effective storage solutions is essential for maintaining a peaceful and organized living environment. Fortunately, with a little creativity, you can maximize your space without sacrificing aesthetics.\n\nOne of the most effective strategies is to utilize vertical space. Installing floating shelves or tall bookcases draws the eye upward, making the room feel larger while providing ample storage for books, decor, and everyday items. Another smart solution is multi-functional furniture. Ottomans with hidden compartments, beds with built-in drawers, and coffee tables that lift up to reveal storage are excellent ways to hide clutter in plain sight.\n\nDon't forget about the often-overlooked areas, such as the back of doors and the space under the stairs. Over-the-door organizers are perfect for shoes, cleaning supplies, or pantry items. By categorizing your belongings and assigning them designated homes, you can create a streamlined space that feels open and relaxing.",
+    icon: Package,
+    iconBg: "bg-blue-500",
+    iconColor: "text-white",
+    image: "/storage_bins.png",
+  },
+  {
+    id: 4,
+    date: "10",
+    month: "MAY",
+    title: "Daily Skincare Routine for Healthy & Glowing Skin",
+    description: "Easy steps and top product picks to keep your skin fresh and radiant every day.",
+    content: "Achieving healthy, glowing skin isn't about using the most expensive products; it's about consistency and finding the right routine for your specific skin type. A good daily skincare regimen can protect your skin from environmental damage, prevent premature aging, and keep you looking refreshed.\n\nThe foundation of any routine is cleansing. Washing your face morning and night removes dirt, oil, and makeup that can clog pores and lead to breakouts. Follow this with a toner to balance your skin's pH levels and prepare it for the next steps. Next comes the treatment phase, where you apply serums tailored to your needs, whether that's vitamin C for brightening or hyaluronic acid for deep hydration.\n\nFinally, moisturizing is crucial for all skin types, even oily skin, as it locks in hydration and strengthens the skin barrier. And perhaps the most important step of all: sunscreen. Applying a broad-spectrum SPF every morning protects against harmful UV rays and is the best defense against aging and skin damage. Stick to this simple routine, and you'll see noticeable improvements in your skin's texture and radiance.",
+    icon: Droplet,
+    iconBg: "bg-purple-500",
+    iconColor: "text-white",
+    image: "/skincare.png",
+  }
+];

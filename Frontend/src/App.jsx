@@ -22,6 +22,8 @@ import CheckoutPage from "./components/CheckoutPage.jsx";
 import LoginPage from "./components/LoginPage.jsx";
 import AccountPage from "./components/AccountPage.jsx";
 import HomeDeals from "./components/HomeDeals.jsx";
+import BlogPage from "./components/BlogPage.jsx";
+import BlogPostPage from "./components/BlogPostPage.jsx";
 
 function getRouteFromHash() {
   const hash = decodeURIComponent(window.location.hash.replace("#", ""));
@@ -46,6 +48,13 @@ function getRouteFromHash() {
   }
   if (hash === "about") {
     return { page: "about", param: null };
+  }
+  if (hash === "blog") {
+    return { page: "blog", param: null };
+  }
+  if (hash.startsWith("blog/")) {
+    const id = parseInt(hash.split("/")[1], 10);
+    return { page: "blog-post", param: isNaN(id) ? 1 : id };
   }
   if (hash === "cart") {
     return { page: "cart", param: null };
@@ -136,6 +145,10 @@ export default function App() {
       hash = "#new-arrivals";
     } else if (page === "about") {
       hash = "#about";
+    } else if (page === "blog") {
+      hash = "#blog";
+    } else if (page === "blog-post" && param !== null) {
+      hash = `#blog/${param}`;
     } else if (page === "cart") {
       hash = "#cart";
     } else if (page === "wishlist") {
@@ -243,6 +256,17 @@ export default function App() {
 
         {currentPage === "about" && (
           <AboutUs onNavigateToHome={() => navigateTo("home")} />
+        )}
+
+        {currentPage === "blog" && (
+          <BlogPage onNavigate={navigateTo} />
+        )}
+
+        {currentPage === "blog-post" && (
+          <BlogPostPage 
+            postId={typeof selectedProductId === 'number' ? selectedProductId : 1} 
+            onNavigate={navigateTo} 
+          />
         )}
 
         {currentPage === "cart" && (

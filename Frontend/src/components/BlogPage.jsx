@@ -2,7 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
-  ChevronRightIcon,
+  ChevronRight,
+  ChevronRight as ChevronRightIcon,
   Lightbulb,
   Star,
   BookOpen,
@@ -18,7 +19,6 @@ export default function BlogPage({ onNavigate }) {
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   return (
     <div className="bg-[#fcfbf9] min-h-screen pb-16">
       
@@ -27,7 +27,7 @@ export default function BlogPage({ onNavigate }) {
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm font-medium text-gray-500 mb-6">
           <button onClick={() => onNavigate?.("home")} className="hover:text-brand-ink transition-colors">Home</button>
-          <ChevronRightIcon size={14} />
+          <ChevronRight size={14} />
           <span className="text-brand-red font-bold">Blog</span>
         </div>
 

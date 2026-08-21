@@ -61,7 +61,7 @@ export default function Header({
     if (label === "Store Locator") {
       nav?.("contact");
     } else if (label === "Track Order") {
-      // No action for Track Order
+      nav?.("track-order");
     } else if (label === "Wishlist") {
       nav?.("wishlist");
     }

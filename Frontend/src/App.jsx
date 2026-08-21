@@ -24,6 +24,12 @@ import AccountPage from "./components/AccountPage.jsx";
 import HomeDeals from "./components/HomeDeals.jsx";
 import BlogPage from "./components/BlogPage.jsx";
 import BlogPostPage from "./components/BlogPostPage.jsx";
+import FranchisePage from "./components/FranchisePage.jsx";
+import FranchiseApplicationPage from "./components/FranchiseApplicationPage.jsx";
+import TrackOrderPage from "./components/TrackOrderPage.jsx";
+import AdminHome from "../admin/Home.jsx";
+import AdminDeals from "../admin/DealsAndOffers.jsx";
+import AdminLogin from "../admin/Login.jsx";
 
 function getRouteFromHash() {
   const hash = decodeURIComponent(window.location.hash.replace("#", ""));
@@ -56,6 +62,12 @@ function getRouteFromHash() {
     const id = parseInt(hash.split("/")[1], 10);
     return { page: "blog-post", param: isNaN(id) ? 1 : id };
   }
+  if (hash === "franchise") {
+    return { page: "franchise", param: null };
+  }
+  if (hash === "apply-franchise") {
+    return { page: "apply-franchise", param: null };
+  }
   if (hash === "cart") {
     return { page: "cart", param: null };
   }
@@ -70,6 +82,15 @@ function getRouteFromHash() {
   }
   if (hash === "account") {
     return { page: "account", param: null };
+  }
+  if (hash === "track-order") {
+    return { page: "track-order", param: null };
+  }
+  if (hash === "admin" || hash === "admin-home") {
+    return { page: "admin", param: null };
+  }
+  if (hash === "admin-deals") {
+    return { page: "admin-deals", param: null };
   }
   if (hash.startsWith("product/")) {
     const id = parseInt(hash.split("/")[1], 10);
@@ -87,6 +108,7 @@ export default function App() {
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
   const handleOpenDrawer = () => setIsDrawerOpen(true);
   const handleCloseDrawer = () => setIsDrawerOpen(false);
@@ -104,6 +126,15 @@ export default function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
+  };
+  
+  const handleAdminLogin = () => {
+    setIsAdminLoggedIn(true);
+    if (currentPage === "admin" || currentPage === "admin-home" || currentPage === "admin-deals") {
+       // already on an admin route, just re-render
+    } else {
+       navigateTo("admin");
+    }
   };
 
   // Sync state from URL hash and handle browser back/forward buttons
@@ -149,6 +180,10 @@ export default function App() {
       hash = "#blog";
     } else if (page === "blog-post" && param !== null) {
       hash = `#blog/${param}`;
+    } else if (page === "franchise") {
+      hash = "#franchise";
+    } else if (page === "apply-franchise") {
+      hash = "#apply-franchise";
     } else if (page === "cart") {
       hash = "#cart";
     } else if (page === "wishlist") {
@@ -159,6 +194,14 @@ export default function App() {
       hash = "#login";
     } else if (page === "account") {
       hash = "#account";
+    } else if (page === "track-order") {
+      hash = "#track-order";
+    } else if (page === "admin") {
+      hash = "#admin";
+    } else if (page === "admin-home") {
+      hash = "#admin-home";
+    } else if (page === "admin-deals") {
+      hash = "#admin-deals";
     } else if (page === "product" && param !== null) {
       if (typeof param === "number") {
         setSelectedProductId(param);
@@ -177,32 +220,36 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-white font-body text-brand-ink selection:bg-brand-yellow selection:text-brand-ink pb-16 md:pb-0">
-      {/* Slide-out navigation drawer for mobile/tablet */}
-      <MobileDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        cartCount={cartCount}
-        onNavigate={navigateTo}
-      />
+      {!currentPage.startsWith("admin") && (
+        <>
+          {/* Slide-out navigation drawer for mobile/tablet */}
+          <MobileDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            cartCount={cartCount}
+            onNavigate={navigateTo}
+          />
 
-      {/* Header with logo, desktop search, mobile search toggle & utilities */}
-      <Header
-        cartCount={cartCount}
-        onOpenDrawer={handleOpenDrawer}
-        isSearchOpen={isSearchOpen}
-        setIsSearchOpen={setIsSearchOpen}
-        onNavigateToHome={(page = "home") => navigateTo(page)}
-        onNavigate={navigateTo}
-        isLoggedIn={isLoggedIn}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-      />
+          {/* Header with logo, desktop search, mobile search toggle & utilities */}
+          <Header
+            cartCount={cartCount}
+            onOpenDrawer={handleOpenDrawer}
+            isSearchOpen={isSearchOpen}
+            setIsSearchOpen={setIsSearchOpen}
+            onNavigateToHome={(page = "home") => navigateTo(page)}
+            onNavigate={navigateTo}
+            isLoggedIn={isLoggedIn}
+            currentUser={currentUser}
+            onLogout={handleLogout}
+          />
 
-      {/* Category nav strip */}
-      <TopNav
-        currentPage={currentPage}
-        onNavigate={navigateTo}
-      />
+          {/* Category nav strip */}
+          <TopNav
+            currentPage={currentPage}
+            onNavigate={navigateTo}
+          />
+        </>
+      )}
 
       {/* Main Page View Switcher */}
       <main>
@@ -269,6 +316,14 @@ export default function App() {
           />
         )}
 
+        {currentPage === "franchise" && (
+          <FranchisePage onNavigate={navigateTo} />
+        )}
+
+        {currentPage === "apply-franchise" && (
+          <FranchiseApplicationPage onNavigate={navigateTo} />
+        )}
+
         {currentPage === "cart" && (
           <CartPage onNavigate={navigateTo} />
         )}
@@ -288,18 +343,39 @@ export default function App() {
         {currentPage === "account" && (
           <AccountPage onNavigate={navigateTo} user={currentUser} onLogout={handleLogout} />
         )}
+
+        {currentPage === "track-order" && (
+          <TrackOrderPage onNavigate={navigateTo} />
+        )}
+
+        {/* Admin Routes Protection */}
+        {currentPage.startsWith("admin") && !isAdminLoggedIn && (
+          <AdminLogin onLogin={handleAdminLogin} />
+        )}
+
+        {currentPage === "admin" && isAdminLoggedIn && (
+          <AdminHome onNavigate={navigateTo} />
+        )}
+        
+        {currentPage === "admin-deals" && isAdminLoggedIn && (
+          <AdminDeals onNavigate={navigateTo} />
+        )}
       </main>
 
-      {/* Comprehensive Footer */}
-      <Footer onNavigate={navigateTo} />
+      {!currentPage.startsWith("admin") && (
+        <>
+          {/* Comprehensive Footer */}
+          <Footer onNavigate={navigateTo} />
 
-      {/* Mobile Sticky Bottom Action Bar */}
-      <MobileBottomNav
-        cartCount={cartCount}
-        onOpenDrawer={handleOpenDrawer}
-        onToggleSearch={handleToggleSearch}
-        onNavigateToHome={() => navigateTo("home")}
-      />
+          {/* Mobile Sticky Bottom Action Bar */}
+          <MobileBottomNav
+            cartCount={cartCount}
+            onOpenDrawer={handleOpenDrawer}
+            onToggleSearch={handleToggleSearch}
+            onNavigateToHome={() => navigateTo("home")}
+          />
+        </>
+      )}
     </div>
   );
 }

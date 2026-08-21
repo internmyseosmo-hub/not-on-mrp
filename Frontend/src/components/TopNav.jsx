@@ -22,13 +22,13 @@ export default function TopNav({ currentPage = "home", onNavigate }) {
             <li
               key={label}
               onClick={() => {
-                if (label === "Franchise Enquiries") return;
                 if (label === "About Us") onNavigate?.("about");
                 else if (label === "Home") onNavigate?.("home");
                 else if (label === "New Arrivals") onNavigate?.("new-arrivals");
                 else if (label === "Deals & Offers") onNavigate?.("deals");
                 else if (label === "Contact Us") onNavigate?.("contact");
                 else if (label === "Blog") onNavigate?.("blog");
+                else if (label === "Franchise Enquiries") onNavigate?.("franchise");
                 else if (label === "Our Products") {
                   onNavigate?.("catalog");
                 }
@@ -43,7 +43,8 @@ export default function TopNav({ currentPage = "home", onNavigate }) {
                   (label === "Deals & Offers" && currentPage === "deals") ||
                   (label === "Contact Us" && currentPage === "contact") ||
                   (label === "New Arrivals" && currentPage === "new-arrivals") ||
-                  (label === "Blog" && currentPage === "blog")
+                  (label === "Blog" && currentPage === "blog") ||
+                  (label === "Franchise Enquiries" && currentPage === "franchise")
                     ? "text-white font-bold"
                     : ""
                 }`}
@@ -60,7 +61,8 @@ export default function TopNav({ currentPage = "home", onNavigate }) {
                   (label === "Deals & Offers" && currentPage === "deals") ||
                   (label === "Contact Us" && currentPage === "contact") ||
                   (label === "Our Products" && currentPage === "catalog") ||
-                  (label === "Blog" && currentPage === "blog")
+                  (label === "Blog" && currentPage === "blog") ||
+                  (label === "Franchise Enquiries" && currentPage === "franchise")
                     ? "w-full"
                     : "w-0 group-hover:w-full"
                 }`}

@@ -74,9 +74,9 @@ export default function Footer({ onNavigate }) {
                 </button>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-brand-red">
+                <button onClick={() => onNavigate?.("franchise")} className="text-gray-400 hover:text-brand-yellow transition-colors cursor-pointer">
                   Franchise Enquiries
-                </a>
+                </button>
               </li>
             </ul>
           </div>

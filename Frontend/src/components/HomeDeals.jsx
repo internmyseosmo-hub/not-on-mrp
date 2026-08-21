@@ -59,9 +59,6 @@ export default function HomeDeals({ onNavigate }) {
                 <circle cx="26" cy="31" r="3.5" fill="white" />
                 <circle cx="38" cy="41" r="3.5" fill="white" />
                 <line x1="40" y1="28" x2="24" y2="44" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-
-                {/* Sparks */}
-                <path d="M22 0 L16 -8 M12 10 L4 6 M10 24 L2 22" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
               </g>
             </svg>
           </div>

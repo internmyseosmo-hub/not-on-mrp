@@ -82,9 +82,9 @@ export default function Header({
         {/* Logo */}
         <button onClick={() => onNavigateToHome?.("home")} className="flex shrink-0 items-center cursor-pointer">
           <img
-            src="/NOTONMRP.png"
+            src="/new.jpeg"
             alt="NOT ON MRP - Everyday Essentials, Always Low Prices!"
-            className="h-12 w-auto max-w-[160px] object-contain transition-transform hover:scale-105 xs:h-14 sm:h-18 md:h-20 md:max-w-none lg:h-24"
+            className="h-10 w-auto max-w-[120px] object-contain transition-transform hover:scale-105 xs:h-12 sm:h-14 md:h-16 md:max-w-[160px] lg:h-20"
           />
         </button>
 

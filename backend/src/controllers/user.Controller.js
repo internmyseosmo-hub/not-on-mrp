@@ -59,7 +59,7 @@ export const loginUser = async (req, res, next) => {
         }
 
         const user = await User.findOne({ email: email.toLowerCase().trim() });
-        if (!user || user.password !== password) {
+        if (!user || !(await user.matchPassword(password))) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid email or password",
@@ -141,16 +141,7 @@ export const updateUser = async (req, res, next) => {
         const mobile = req.body.mobile || req.body.phone;
         const { email, password } = req.body;
 
-        const updateData = {};
-        if (fullName) updateData.fullName = fullName;
-        if (email) updateData.email = email;
-        if (password) updateData.password = password;
-        if (mobile !== undefined) updateData.mobile = mobile;
-
-        const user = await User.findByIdAndUpdate(req.params.id, updateData, {
-            new: true,
-            runValidators: true,
-        }).select("-password");
+        const user = await User.findById(req.params.id);
 
         if (!user) {
             return res.status(404).json({
@@ -159,10 +150,22 @@ export const updateUser = async (req, res, next) => {
             });
         }
 
+        if (fullName) user.fullName = fullName;
+        if (email) user.email = email;
+        if (password) user.password = password;
+        if (mobile !== undefined) user.mobile = mobile;
+
+        await user.save();
+
         res.status(200).json({
             success: true,
             message: "User updated successfully",
-            data: user,
+            data: {
+                _id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                mobile: user.mobile,
+            },
         });
     } catch (error) {
         next(error);

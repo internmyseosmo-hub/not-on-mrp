@@ -15,40 +15,92 @@ export default function LoginPage({ onNavigate, onLogin }) {
   const handleLoginField = (e) => setLoginForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   const handleSignupField = (e) => setSignupForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     if (!loginForm.email || !loginForm.password) return setError("Please fill all fields.");
+    
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch("http://127.0.0.1:3000/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: loginForm.email,
+          password: loginForm.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Save token (if needed for protected routes)
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
       onLogin?.({
-        name: loginForm.email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-        email: loginForm.email,
-        phone: "",
-        avatar: loginForm.email[0].toUpperCase(),
+        name: data.data.fullName || data.data.email.split("@")[0],
+        email: data.data.email,
+        phone: data.data.mobile || "",
+        avatar: (data.data.fullName || data.data.email)[0].toUpperCase(),
+        _id: data.data._id
       });
       onNavigate?.("account");
-    }, 1200);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
     if (!signupForm.name || !signupForm.email || !signupForm.password) return setError("Please fill all fields.");
     if (signupForm.password !== signupForm.confirm) return setError("Passwords do not match!");
     if (signupForm.password.length < 6) return setError("Password must be at least 6 characters.");
+    
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch("http://127.0.0.1:3000/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: signupForm.name,
+          email: signupForm.email,
+          password: signupForm.password,
+          mobile: signupForm.phone,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      // Save token
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
       onLogin?.({
-        name: signupForm.name,
-        email: signupForm.email,
-        phone: signupForm.phone,
-        avatar: signupForm.name[0].toUpperCase(),
+        name: data.data.fullName,
+        email: data.data.email,
+        phone: data.data.mobile || "",
+        avatar: data.data.fullName[0].toUpperCase(),
+        _id: data.data._id
       });
       onNavigate?.("account");
-    }, 1400);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,11 +123,6 @@ export default function LoginPage({ onNavigate, onLogin }) {
         >
           {/* Header Banner */}
           <div className="bg-gradient-to-br from-[#121820] to-[#2a3444] p-8 text-center">
-            <img
-              src="/NOTONMRP.png"
-              alt="NOT ON MRP Logo"
-              className="mx-auto mb-4 h-14 w-auto object-contain"
-            />
             <h1 className="font-display text-xl font-black uppercase text-white">
               {tab === "login" ? "WELCOME BACK!" : "JOIN NOT ON MRP"}
             </h1>

@@ -27,73 +27,80 @@ import BlogPostPage from "./components/BlogPostPage.jsx";
 import FranchisePage from "./components/FranchisePage.jsx";
 import FranchiseApplicationPage from "./components/FranchiseApplicationPage.jsx";
 import TrackOrderPage from "./components/TrackOrderPage.jsx";
-import AdminHome from "../admin/Home.jsx";
-import AdminDeals from "../admin/DealsAndOffers.jsx";
-import AdminLogin from "../admin/Login.jsx";
+import AdminHome from "./admin/Home.jsx";
+import AdminDeals from "./admin/DealsAndOffers.jsx";
+import AdminLogin from "./admin/Login.jsx";
+import AdminLayout from "./admin/AdminLayout.jsx";
+import AdminDashboard from "./admin/Dashboard.jsx";
+import AdminBlog from "./admin/Blog.jsx";
+import AdminProduct from "./admin/Product.jsx";
+import AdminContact from "./admin/Contact.jsx";
+import AdminUser from "./admin/User.jsx";
 
-function getRouteFromHash() {
-  const hash = decodeURIComponent(window.location.hash.replace("#", ""));
-  if (!hash || hash === "home") {
+function getRouteFromPath() {
+  const path = decodeURIComponent(window.location.pathname.replace(/^\/+/, ""));
+  if (!path || path === "home") {
     return { page: "home", param: null };
   }
-  if (hash === "deals") {
+  if (path === "deals") {
     return { page: "deals", param: null };
   }
-  if (hash === "contact") {
+  if (path === "contact") {
     return { page: "contact", param: null };
   }
-  if (hash === "catalog") {
+  if (path === "catalog") {
     return { page: "catalog", param: "All" };
   }
-  if (hash.startsWith("catalog/")) {
-    const category = hash.replace("catalog/", "");
+  if (path.startsWith("catalog/")) {
+    const category = path.replace("catalog/", "");
     return { page: "catalog", param: category || "All" };
   }
-  if (hash === "new-arrivals") {
+  if (path === "new-arrivals") {
     return { page: "new-arrivals", param: null };
   }
-  if (hash === "about") {
+  if (path === "about") {
     return { page: "about", param: null };
   }
-  if (hash === "blog") {
+  if (path === "blog") {
     return { page: "blog", param: null };
   }
-  if (hash.startsWith("blog/")) {
-    const id = parseInt(hash.split("/")[1], 10);
+  if (path.startsWith("blog/")) {
+    const id = parseInt(path.split("/")[1], 10);
     return { page: "blog-post", param: isNaN(id) ? 1 : id };
   }
-  if (hash === "franchise") {
+  if (path === "franchise") {
     return { page: "franchise", param: null };
   }
-  if (hash === "apply-franchise") {
+  if (path === "apply-franchise") {
     return { page: "apply-franchise", param: null };
   }
-  if (hash === "cart") {
+  if (path === "cart") {
     return { page: "cart", param: null };
   }
-  if (hash === "wishlist") {
+  if (path === "wishlist") {
     return { page: "wishlist", param: null };
   }
-  if (hash === "checkout") {
+  if (path === "checkout") {
     return { page: "checkout", param: null };
   }
-  if (hash === "login") {
+  if (path === "login") {
     return { page: "login", param: null };
   }
-  if (hash === "account") {
+  if (path === "account") {
     return { page: "account", param: null };
   }
-  if (hash === "track-order") {
+  if (path === "track-order") {
     return { page: "track-order", param: null };
   }
-  if (hash === "admin" || hash === "admin-home") {
-    return { page: "admin", param: null };
+  if (path === "admin" || path === "admin/") {
+    return { page: "admin", param: "dashboard" };
   }
-  if (hash === "admin-deals") {
-    return { page: "admin-deals", param: null };
+  if (path.startsWith("admin/")) {
+    const sub = path.replace("admin/", "");
+    return { page: "admin", param: sub };
   }
-  if (hash.startsWith("product/")) {
-    const id = parseInt(hash.split("/")[1], 10);
+  if (path.startsWith("product/")) {
+    const id = parseInt(path.split("/")[1], 10);
     return { page: "product", param: isNaN(id) ? 1 : id };
   }
   return { page: "home", param: null };
@@ -108,7 +115,10 @@ export default function App() {
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(
+    !!localStorage.getItem("adminToken")
+  );
+  const [adminSubpage, setAdminSubpage] = useState("dashboard");
 
   const handleOpenDrawer = () => setIsDrawerOpen(true);
   const handleCloseDrawer = () => setIsDrawerOpen(false);
@@ -126,93 +136,120 @@ export default function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
+    localStorage.removeItem("token");
   };
   
   const handleAdminLogin = () => {
     setIsAdminLoggedIn(true);
-    if (currentPage === "admin" || currentPage === "admin-home" || currentPage === "admin-deals") {
+    if (currentPage === "admin" && adminSubpage !== "login") {
        // already on an admin route, just re-render
     } else {
-       navigateTo("admin");
+       navigateTo("admin", "dashboard");
     }
   };
 
-  // Sync state from URL hash and handle browser back/forward buttons
+  // Sync state from URL path and handle browser back/forward buttons
   useEffect(() => {
     const handleLocationChange = () => {
-      const route = getRouteFromHash();
+      const route = getRouteFromPath();
       setCurrentPage(route.page);
       if (route.page === "product" && typeof route.param === "number") {
         setSelectedProductId(route.param);
       } else if (route.page === "catalog" && typeof route.param === "string") {
         setSelectedCategory(route.param);
+      } else if (route.page === "admin") {
+        setAdminSubpage(route.param || "dashboard");
       }
     };
 
-    // Initialize from current hash on load
+    // Initialize from current path on load
     handleLocationChange();
+
+    // Check for existing user session
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch("http://127.0.0.1:3000/api/users/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Session expired");
+          return res.json();
+        })
+        .then((data) => {
+          if (data.success && data.data) {
+            handleLogin({
+              name: data.data.fullName || data.data.email.split("@")[0],
+              email: data.data.email,
+              phone: data.data.mobile || "",
+              avatar: (data.data.fullName || data.data.email)[0].toUpperCase(),
+              _id: data.data._id
+            });
+          }
+        })
+        .catch((err) => {
+          console.error(err.message);
+          localStorage.removeItem("token");
+        });
+    }
 
     // Listen to browser Back / Forward actions
     window.addEventListener("popstate", handleLocationChange);
-    window.addEventListener("hashchange", handleLocationChange);
 
     return () => {
       window.removeEventListener("popstate", handleLocationChange);
-      window.removeEventListener("hashchange", handleLocationChange);
     };
   }, []);
 
   const navigateTo = (page, param = null, pushHistory = true) => {
-    let hash = "#home";
+    let path = "/home";
     if (page === "catalog") {
       const cat = typeof param === "string" ? param : "All";
       setSelectedCategory(cat);
-      hash = cat !== "All" ? `#catalog/${encodeURIComponent(cat)}` : "#catalog";
+      path = cat !== "All" ? `/catalog/${encodeURIComponent(cat)}` : "/catalog";
     } else if (page === "deals") {
-      hash = "#deals";
+      path = "/deals";
     } else if (page === "contact") {
-      hash = "#contact";
+      path = "/contact";
     } else if (page === "new-arrivals") {
-      hash = "#new-arrivals";
+      path = "/new-arrivals";
     } else if (page === "about") {
-      hash = "#about";
+      path = "/about";
     } else if (page === "blog") {
-      hash = "#blog";
+      path = "/blog";
     } else if (page === "blog-post" && param !== null) {
-      hash = `#blog/${param}`;
+      path = `/blog/${param}`;
     } else if (page === "franchise") {
-      hash = "#franchise";
+      path = "/franchise";
     } else if (page === "apply-franchise") {
-      hash = "#apply-franchise";
+      path = "/apply-franchise";
     } else if (page === "cart") {
-      hash = "#cart";
+      path = "/cart";
     } else if (page === "wishlist") {
-      hash = "#wishlist";
+      path = "/wishlist";
     } else if (page === "checkout") {
-      hash = "#checkout";
+      path = "/checkout";
     } else if (page === "login") {
-      hash = "#login";
+      path = "/login";
     } else if (page === "account") {
-      hash = "#account";
+      path = "/account";
     } else if (page === "track-order") {
-      hash = "#track-order";
+      path = "/track-order";
     } else if (page === "admin") {
-      hash = "#admin";
-    } else if (page === "admin-home") {
-      hash = "#admin-home";
-    } else if (page === "admin-deals") {
-      hash = "#admin-deals";
+      path = !param || param === "dashboard" ? "/admin" : `/admin/${param}`;
+      if (param) setAdminSubpage(param);
     } else if (page === "product" && param !== null) {
       if (typeof param === "number") {
         setSelectedProductId(param);
       }
-      hash = `#product/${param}`;
+      path = `/product/${param}`;
     }
 
     setCurrentPage(page);
 
-    if (pushHistory && window.location.hash !== hash) {
-      window.history.pushState({ page, param }, "", hash);
+    if (pushHistory && window.location.pathname !== path) {
+      window.history.pushState({ page, param }, "", path);
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -341,7 +378,7 @@ export default function App() {
         )}
 
         {currentPage === "account" && (
-          <AccountPage onNavigate={navigateTo} user={currentUser} onLogout={handleLogout} />
+          <AccountPage onNavigate={navigateTo} user={currentUser} onLogout={handleLogout} onUpdateUser={(updatedUser) => setCurrentUser({ ...currentUser, ...updatedUser })} />
         )}
 
         {currentPage === "track-order" && (
@@ -349,16 +386,28 @@ export default function App() {
         )}
 
         {/* Admin Routes Protection */}
-        {currentPage.startsWith("admin") && !isAdminLoggedIn && (
+        {currentPage === "admin" && !isAdminLoggedIn && (
           <AdminLogin onLogin={handleAdminLogin} />
         )}
 
         {currentPage === "admin" && isAdminLoggedIn && (
-          <AdminHome onNavigate={navigateTo} />
-        )}
-        
-        {currentPage === "admin-deals" && isAdminLoggedIn && (
-          <AdminDeals onNavigate={navigateTo} />
+          <AdminLayout 
+            activePage={adminSubpage} 
+            onNavigate={navigateTo} 
+            onLogout={() => {
+              setIsAdminLoggedIn(false);
+              localStorage.removeItem("adminToken");
+              navigateTo("admin", "login");
+            }}
+          >
+            {adminSubpage === "dashboard" && <AdminDashboard />}
+            {adminSubpage === "home" && <AdminHome onNavigate={navigateTo} />}
+            {adminSubpage === "blog" && <AdminBlog />}
+            {adminSubpage === "products" && <AdminProduct />}
+            {adminSubpage === "deals" && <AdminDeals onNavigate={navigateTo} />}
+            {adminSubpage === "contact" && <AdminContact />}
+            {adminSubpage === "users" && <AdminUser />}
+          </AdminLayout>
         )}
       </main>
 

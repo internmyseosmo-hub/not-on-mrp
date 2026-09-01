@@ -34,20 +34,72 @@ export default function ContactPage({ onNavigate }) {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
+  const handlePhoneChange = (e) => {
+    const val = e.target.value.replace(/\D/g, ""); // allow only digits
+    if (val.length <= 10) {
+      setFormData({ ...formData, phone: val });
+      if (val.length > 0 && val.length < 10) {
+        setPhoneError("Invalid");
+      } else {
+        setPhoneError("");
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "General Inquiry",
-        message: "",
+    
+    if (formData.phone.length !== 10) {
+      setPhoneError("Invalid");
+      setErrorMessage("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("http://127.0.0.1:3000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          enquiry: formData.subject,
+          message: formData.message,
+        }),
       });
-    }, 4000);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong. Please try again.");
+      }
+
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "General Inquiry",
+          message: "",
+        });
+      }, 4000);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -188,6 +240,18 @@ export default function ContactPage({ onNavigate }) {
                   </div>
                 </motion.div>
               )}
+              {errorMessage && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, y: -10 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -10 }}
+                  className="mb-6 rounded-2xl bg-red-50 border-2 border-red-400 p-4 flex items-center gap-3 text-red-800 text-sm font-bold shadow-md"
+                >
+                  <div>
+                    {errorMessage}
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -232,13 +296,20 @@ export default function ContactPage({ onNavigate }) {
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
                   <Phone size={18} />
                 </div>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="Your Phone Number"
-                  className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50/60 py-3.5 pl-11 pr-4 text-sm font-semibold text-brand-ink placeholder-gray-400 outline-none transition-all focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-400/20"
-                />
+                <div className={`flex w-full items-center rounded-2xl border-2 bg-gray-50/60 py-3.5 pl-11 pr-4 transition-all focus-within:bg-white focus-within:ring-4 focus-within:ring-amber-400/20 ${phoneError ? 'border-red-400' : 'border-gray-200 focus-within:border-amber-400'}`}>
+                  <span className="text-gray-500 font-semibold mr-1.5">+91</span>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={handlePhoneChange}
+                    placeholder="Enter your number"
+                    className="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-sm font-semibold text-brand-ink outline-none placeholder-gray-400"
+                  />
+                </div>
+                {phoneError && (
+                  <p className="absolute -bottom-5 left-4 text-xs font-bold text-red-500">{phoneError}</p>
+                )}
               </div>
 
               {/* Subject Dropdown */}
@@ -281,10 +352,11 @@ export default function ContactPage({ onNavigate }) {
               <div className="pt-2 flex items-center gap-4">
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center gap-2.5 rounded-full bg-amber-400 px-8 py-3.5 font-display text-sm font-black uppercase text-black shadow-lg shadow-amber-400/30 transition-all hover:bg-amber-500 hover:scale-105 active:scale-95 cursor-pointer"
+                  disabled={isSubmitting}
+                  className={`inline-flex items-center justify-center gap-2.5 rounded-full bg-amber-400 px-8 py-3.5 font-display text-sm font-black uppercase text-black shadow-lg shadow-amber-400/30 transition-all ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-amber-500 hover:scale-105 active:scale-95 cursor-pointer'}`}
                 >
-                  <Send size={18} strokeWidth={2.5} />
-                  <span>SEND MESSAGE</span>
+                  <Send size={18} strokeWidth={2.5} className={isSubmitting ? 'animate-pulse' : ''} />
+                  <span>{isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}</span>
                 </button>
 
                 {/* Hand Drawn Arrow Line Doodle */}

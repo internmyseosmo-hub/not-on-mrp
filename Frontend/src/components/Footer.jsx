@@ -17,9 +17,9 @@ export default function Footer({ onNavigate }) {
           <div className="space-y-4 lg:col-span-2">
             <button onClick={() => onNavigate?.("home")} className="flex items-center text-left">
               <img
-                src="/NOTONMRP.png"
+                src="/new.jpeg"
                 alt="NOT ON MRP Logo"
-                className="h-12 w-auto max-w-[160px] object-contain transition-transform hover:scale-105 sm:h-14 md:h-16"
+                className="h-20 w-auto max-w-[250px] object-contain transition-transform hover:scale-105 sm:h-24 md:h-28"
               />
             </button>
             <p className="max-w-sm text-xs leading-relaxed text-brand-ink/80 sm:text-sm">

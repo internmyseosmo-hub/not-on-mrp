@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   User, Mail, Phone, MapPin, ShoppingBag, Heart, LogOut,
@@ -11,17 +11,65 @@ const DEMO_ORDERS = [
   { id: "NOM-674020", date: "Jul 15, 2026", items: "Kitchen Cleaning Set", total: 499, status: "Processing", icon: Clock, color: "text-blue-600 bg-blue-50 border-blue-200" },
 ];
 
-export default function AccountPage({ onNavigate, user, onLogout }) {
+export default function AccountPage({ onNavigate, user, onLogout, onUpdateUser }) {
   const [activeSection, setActiveSection] = useState("overview");
   const [editMode, setEditMode] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [editForm, setEditForm] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
 
+  useEffect(() => {
+    setEditForm({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+    });
+  }, [user]);
+
   const handleEditField = (e) => setEditForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  const handleSave = () => setEditMode(false);
+  
+  const handleSave = async () => {
+    if (!user?._id) return;
+    setIsSaving(true);
+    setErrorMsg("");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://127.0.0.1:3000/api/users/${user._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          fullName: editForm.name,
+          email: editForm.email,
+          mobile: editForm.phone,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update profile");
+      }
+
+      onUpdateUser?.({
+        name: data.data.fullName,
+        email: data.data.email,
+        phone: data.data.mobile || "",
+        avatar: data.data.fullName[0].toUpperCase()
+      });
+
+      setEditMode(false);
+    } catch (err) {
+      setErrorMsg(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleLogout = () => {
     onLogout?.();
@@ -57,7 +105,6 @@ export default function AccountPage({ onNavigate, user, onLogout }) {
 
             {/* User Card */}
             <div className="rounded-3xl bg-gradient-to-br from-[#121820] to-[#2a3444] p-6 text-white shadow-xl">
-              <img src="/NOTONMRP.png" alt="NOT ON MRP" className="mb-4 h-8 w-auto object-contain" />
               <div className="flex items-center gap-4">
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-yellow text-2xl font-black text-brand-ink shadow-lg">
                   {avatar}
@@ -116,12 +163,14 @@ export default function AccountPage({ onNavigate, user, onLogout }) {
                   <h3 className="font-display text-sm font-black uppercase text-brand-ink">MY PROFILE</h3>
                   <button
                     onClick={() => editMode ? handleSave() : setEditMode(true)}
-                    className="flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[11px] font-black uppercase text-white hover:bg-gray-900 transition-all cursor-pointer"
+                    disabled={isSaving}
+                    className="flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[11px] font-black uppercase text-white hover:bg-gray-900 transition-all cursor-pointer disabled:opacity-70"
                   >
-                    <Edit3 size={12} />
-                    {editMode ? "SAVE CHANGES" : "EDIT PROFILE"}
+                    <Edit3 size={12} className={isSaving ? "animate-spin" : ""} />
+                    {editMode ? (isSaving ? "SAVING..." : "SAVE CHANGES") : "EDIT PROFILE"}
                   </button>
                 </div>
+                {errorMsg && <p className="text-[11px] font-bold text-red-500 mb-4">{errorMsg}</p>}
 
                 <div className="space-y-4">
                   {[

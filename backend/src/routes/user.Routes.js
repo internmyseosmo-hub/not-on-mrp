@@ -23,6 +23,6 @@ router.get("/profile", protect, getUserProfile);
 router.get("/", getUsers);
 router.get("/:id", getUserById);
 router.put("/:id", protect, updateUser);
-router.delete("/:id", protect, deleteUser);
+router.delete("/:id", deleteUser);
 
 export default router;

@@ -5,6 +5,7 @@ import productRoutes from './product.Routes.js';
 import imageKitRoutes from './imageKit.Routes.js';
 import categoryRoutes from './category.Routes.js';
 import adminRoutes from './admin.Routes.js';
+import franchiseRoutes from './franchise.Routes.js';
 
 const routers = express.Router();
 
@@ -14,5 +15,7 @@ routers.use('/products', productRoutes);
 routers.use('/imagekit', imageKitRoutes);
 routers.use('/categories', categoryRoutes);
 routers.use('/admin', adminRoutes);
+routers.use('/franchise', franchiseRoutes);
 
 export default routers;
+

@@ -22,14 +22,42 @@ export default function FranchiseApplicationPage({ onNavigate }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch('http://127.0.0.1:3000/api/franchise', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          phoneNumber: formData.phone,
+          city: formData.city,
+          state: formData.state,
+          investmentBudget: formData.investmentBudget,
+          franchiseModel: formData.preferredModel,
+          ownsRetailSpace: formData.ownRetailSpace,
+          additionalInformation: formData.experience
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsSubmitting(false);
+        setIsSuccess(true);
+      } else {
+        throw new Error(data.message || 'Failed to submit application');
+      }
+    } catch (error) {
+      console.error('Error submitting franchise application:', error);
+      alert(error.message || 'Something went wrong. Please try again.');
       setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 1500);
+    }
   };
 
   return (

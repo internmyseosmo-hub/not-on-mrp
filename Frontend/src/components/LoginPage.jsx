@@ -19,10 +19,10 @@ export default function LoginPage({ onNavigate, onLogin }) {
     e.preventDefault();
     setError("");
     if (!loginForm.email || !loginForm.password) return setError("Please fill all fields.");
-    
+
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/users/login", {
+      const response = await fetch("http://localhost:3000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -63,10 +63,10 @@ export default function LoginPage({ onNavigate, onLogin }) {
     if (!signupForm.name || !signupForm.email || !signupForm.password) return setError("Please fill all fields.");
     if (signupForm.password !== signupForm.confirm) return setError("Passwords do not match!");
     if (signupForm.password.length < 6) return setError("Password must be at least 6 characters.");
-    
+
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/users/register", {
+      const response = await fetch("http://localhost:3000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -123,6 +123,11 @@ export default function LoginPage({ onNavigate, onLogin }) {
         >
           {/* Header Banner */}
           <div className="bg-gradient-to-br from-[#121820] to-[#2a3444] p-8 text-center">
+            <img
+              src="/NOTONMRP.png"
+              alt="NOT ON MRP Logo"
+              className="mx-auto mb-4 h-14 w-auto object-contain"
+            />
             <h1 className="font-display text-xl font-black uppercase text-white">
               {tab === "login" ? "WELCOME BACK!" : "JOIN NOT ON MRP"}
             </h1>
@@ -137,9 +142,8 @@ export default function LoginPage({ onNavigate, onLogin }) {
               <button
                 key={t}
                 onClick={() => { setTab(t); setError(""); }}
-                className={`flex-1 py-3.5 text-xs font-black uppercase tracking-wide transition-colors cursor-pointer ${
-                  tab === t ? "border-b-2 border-black text-brand-ink" : "text-gray-400 hover:text-gray-600"
-                }`}
+                className={`flex-1 py-3.5 text-xs font-black uppercase tracking-wide transition-colors cursor-pointer ${tab === t ? "border-b-2 border-black text-brand-ink" : "text-gray-400 hover:text-gray-600"
+                  }`}
               >
                 {t === "login" ? "Sign In" : "Create Account"}
               </button>

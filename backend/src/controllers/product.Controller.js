@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Product from "../models/product.js";
 import { getImageKit } from "../config/imagekit.js";
 
@@ -13,14 +14,16 @@ const parseField = (value, fallback) => {
 
 const normalizeProductBody = (body) => ({
     ...body,
-    id: body.id === undefined ? body.id : Number(body.id),
+    id: body.id === undefined || body.id === "" ? Date.now() : Number(body.id),
     price: body.price === undefined ? body.price : Number(body.price),
     mrp: body.mrp === undefined ? body.mrp : Number(body.mrp),
     discount: body.discount === undefined ? body.discount : Number(body.discount),
-    rating: body.rating === undefined ? body.rating : Number(body.rating),
-    reviewsCount: body.reviewsCount === undefined ? body.reviewsCount : Number(body.reviewsCount),
+    rating: body.rating === undefined || body.rating === "" ? 4.5 : Number(body.rating),
+    reviewsCount: body.reviewsCount === undefined || body.reviewsCount === "" ? 0 : Number(body.reviewsCount),
     stockCount: body.stockCount === undefined ? body.stockCount : Number(body.stockCount),
     inStock: body.inStock === undefined ? body.inStock : body.inStock === true || body.inStock === "true",
+    isDeal: body.isDeal === true || body.isDeal === "true",
+    isNewArrival: body.isNewArrival === true || body.isNewArrival === "true",
     colors: parseField(body.colors, []),
     highlights: parseField(body.highlights, []),
     specifications: parseField(body.specifications, []),
@@ -54,7 +57,9 @@ export const getProducts = async (req, res, next) => {
         const maxPrice = getNumber(req.query.maxPrice);
         const minRating = getNumber(req.query.minRating);
         const page = Math.max(getNumber(req.query.page) || 1, 1);
-        const limit = Math.min(Math.max(getNumber(req.query.limit) || 24, 1), 100);
+        const limit = req.query.all === "true" || req.query.limit === "all"
+            ? 1000
+            : Math.min(Math.max(getNumber(req.query.limit) || 24, 1), 1000);
 
         if ([minPrice, maxPrice, minRating].includes(null)) {
             return res.status(400).json({ success: false, message: "Price and rating filters must be numbers" });
@@ -76,6 +81,12 @@ export const getProducts = async (req, res, next) => {
             if (maxPrice !== undefined) filter.price.$lte = maxPrice;
         }
         if (minRating !== undefined) filter.rating = { $gte: minRating };
+        if (req.query.isDeal !== undefined) {
+            filter.isDeal = req.query.isDeal === "true" || req.query.isDeal === true;
+        }
+        if (req.query.isNewArrival !== undefined) {
+            filter.isNewArrival = req.query.isNewArrival === "true" || req.query.isNewArrival === true;
+        }
 
         const sortMap = {
             popular: { reviewsCount: -1 },
@@ -109,7 +120,14 @@ export const getProducts = async (req, res, next) => {
 // @route   GET /api/products/:id
 export const getProductById = async (req, res, next) => {
     try {
-        const product = await Product.findOne({ id: Number(req.params.id) });
+        const idParam = req.params.id;
+        let product = null;
+        if (!isNaN(idParam)) {
+            product = await Product.findOne({ id: Number(idParam) });
+        }
+        if (!product && mongoose.Types.ObjectId.isValid(idParam)) {
+            product = await Product.findById(idParam);
+        }
         if (!product) return res.status(404).json({ success: false, message: "Product not found" });
         res.status(200).json({ success: true, data: product });
     } catch (error) {
@@ -151,12 +169,14 @@ export const createProduct = async (req, res, next) => {
 // @route   PUT /api/products/:id
 export const updateProduct = async (req, res, next) => {
     try {
+        const idParam = req.params.id;
         const updateData = normalizeProductBody(req.body);
         const imageUrl = await uploadProductImage(req.file);
         if (imageUrl) updateData.image = imageUrl;
 
+        const query = !isNaN(idParam) ? { id: Number(idParam) } : { _id: idParam };
         const product = await Product.findOneAndUpdate(
-            { id: Number(req.params.id) },
+            query,
             updateData,
             { new: true, runValidators: true }
         );
@@ -171,7 +191,9 @@ export const updateProduct = async (req, res, next) => {
 // @route   DELETE /api/products/:id
 export const deleteProduct = async (req, res, next) => {
     try {
-        const product = await Product.findOneAndDelete({ id: Number(req.params.id) });
+        const idParam = req.params.id;
+        const query = !isNaN(idParam) ? { id: Number(idParam) } : { _id: idParam };
+        const product = await Product.findOneAndDelete(query);
         if (!product) return res.status(404).json({ success: false, message: "Product not found" });
         res.status(200).json({ success: true, message: "Product deleted successfully" });
     } catch (error) {

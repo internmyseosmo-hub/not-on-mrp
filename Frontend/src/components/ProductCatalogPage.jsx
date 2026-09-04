@@ -98,6 +98,18 @@ export default function ProductCatalogPage({
   const [priceFilter, setPriceFilter] = useState("all"); // 'all' | 'under500' | '500to1000' | 'above1000'
   const [minRating, setMinRating] = useState(0); // 0 | 4.5
   const [sortBy, setSortBy] = useState("popular"); // 'popular' | 'priceLow' | 'priceHigh' | 'rating'
+  const [apiProducts, setApiProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/api/products?limit=100")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiProducts(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching catalog products:", err));
+  }, []);
 
   useEffect(() => {
     if (initialCategory && initialCategory !== "All") {
@@ -133,13 +145,25 @@ export default function ProductCatalogPage({
     }
   }, [initialCategory]);
 
-  // Extract unique category names
-  const allCategories = Object.keys(CATEGORY_META).filter((cat) =>
-    products.some((p) => (p.category || "General Essentials") === cat)
+  // Combine API products and local sample products
+  const combinedProducts = [...apiProducts, ...products];
+
+  // Extract unique category names from both predefined meta and all products
+  const allCategories = Array.from(
+    new Set([
+      ...Object.keys(CATEGORY_META),
+      ...combinedProducts.map((p) => p.category).filter(Boolean),
+    ])
+  ).filter((cat) =>
+    combinedProducts.some(
+      (p) =>
+        (p.category || "General Essentials").toLowerCase() === cat.toLowerCase() ||
+        p.category === cat
+    )
   );
 
   // Filter products based on search, category, price, and rating
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = combinedProducts.filter((product) => {
     const prodCategory = product.category || "General Essentials";
 
     // Category or Deal Offer match
@@ -232,17 +256,21 @@ export default function ProductCatalogPage({
           prodCategory === "Drinkware & Hydration" ||
           product.name.toLowerCase().includes("bottle");
       } else {
-        matchesCategory = prodCategory === selectedCategory;
+        matchesCategory =
+          prodCategory.toLowerCase() === selectedCategory.toLowerCase();
       }
     }
 
     // Search query match
     const matchesSearch =
       searchQuery.trim() === "" ||
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.name &&
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
       prodCategory.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (product.tagline &&
         product.tagline.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (product.description &&
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (product.highlights &&
         product.highlights.some((h) =>
           h.toLowerCase().includes(searchQuery.toLowerCase())
@@ -256,7 +284,7 @@ export default function ProductCatalogPage({
     if (priceFilter === "above1000") matchesPrice = product.price > 1000;
 
     // Rating match
-    const matchesRating = minRating === 0 || product.rating >= minRating;
+    const matchesRating = minRating === 0 || (product.rating ?? 4.5) >= minRating;
 
     return matchesCategory && matchesSearch && matchesPrice && matchesRating;
   });
@@ -265,7 +293,7 @@ export default function ProductCatalogPage({
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === "priceLow") return a.price - b.price;
     if (sortBy === "priceHigh") return b.price - a.price;
-    if (sortBy === "rating") return b.rating - a.rating;
+    if (sortBy === "rating") return (b.rating ?? 4.5) - (a.rating ?? 4.5);
     return (b.reviewsCount || 0) - (a.reviewsCount || 0); // popular default
   });
 
@@ -354,9 +382,6 @@ export default function ProductCatalogPage({
                 <span className="rounded-full bg-white/20 px-3.5 py-1 text-xs font-extrabold backdrop-blur-md uppercase tracking-wider">
                   Category
                 </span>
-                <span className="rounded-full bg-white/30 px-3 py-1 text-xs font-bold">
-                  {sortedProducts.length} Items Available
-                </span>
               </div>
               <h1 className="mt-3 font-display text-2xl font-black sm:text-4xl">
                 {selectedCategory}
@@ -414,17 +439,12 @@ export default function ProductCatalogPage({
                     onChange={(e) => handleSelectCategory(e.target.value)}
                     className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-brand-ink outline-none cursor-pointer hover:border-gray-300 focus:border-brand-ink"
                   >
-                    <option value="All">All Categories ({products.length})</option>
-                    {allCategories.map((cat) => {
-                      const count = products.filter(
-                        (p) => (p.category || "General Essentials") === cat
-                      ).length;
-                      return (
-                        <option key={cat} value={cat}>
-                          {cat} ({count})
-                        </option>
-                      );
-                    })}
+                    <option value="All">All Categories</option>
+                    {allCategories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -550,9 +570,6 @@ export default function ProductCatalogPage({
               {allCategories.map((catName) => {
                 const meta = CATEGORY_META[catName] || {};
                 const Icon = meta.icon || Package;
-                const catProducts = products.filter(
-                  (p) => (p.category || "General Essentials") === catName
-                );
 
                 return (
                   <motion.div
@@ -571,9 +588,6 @@ export default function ProductCatalogPage({
                         >
                           <Icon size={24} />
                         </div>
-                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-extrabold text-amber-800 border border-amber-200/60">
-                          {catProducts.length} Items
-                        </span>
                       </div>
 
                       <h3 className="mt-4 font-display text-base font-black text-brand-ink group-hover:text-brand-red transition-colors sm:text-lg">
@@ -629,12 +643,12 @@ export default function ProductCatalogPage({
                     >
                       {!product.image && (
                         <div
-                          className={`absolute inset-0 bg-gradient-to-br ${product.art} opacity-90`}
+                          className={`absolute inset-0 bg-gradient-to-br ${product.art || "from-amber-400 to-orange-500"} opacity-90`}
                         />
                       )}
 
                       {product.image ? (
-                        <img src={product.image} alt={product.name} className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <img src={product.image} alt={product.name} className="absolute inset-0 z-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-110" />
                       ) : (
                         <div className="relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/25 text-white backdrop-blur-xs transition-transform group-hover:scale-110 sm:h-24 sm:w-24">
                           <Icon size={44} strokeWidth={1.4} />
@@ -662,9 +676,9 @@ export default function ProductCatalogPage({
                       {/* Rating */}
                       <div className="mt-1 flex items-center gap-1 text-[11px] font-bold text-gray-600">
                         <Star size={12} className="fill-amber-400 text-amber-400" />
-                        <span>{product.rating}</span>
+                        <span>{product.rating ?? 4.5}</span>
                         <span className="text-gray-400">
-                          ({product.reviewsCount})
+                          ({product.reviewsCount ?? 0})
                         </span>
                       </div>
 

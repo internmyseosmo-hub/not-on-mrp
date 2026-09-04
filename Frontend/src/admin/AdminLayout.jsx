@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { 
-  Home, FileText, Package, ChevronDown, MessageSquare, Users, Settings, LogOut, Menu
+  Home, FileText, Package, ChevronDown, MessageSquare, Users, Settings, LogOut, Menu, Tag, Sparkles, Store
 } from 'lucide-react';
 
 const AdminLayout = ({ children, onNavigate, activePage = 'dashboard', onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: 'blog', label: 'About', icon: FileText },
-    { id: 'products', label: 'Our Products', icon: Package, hasDropdown: true },
+    { id: 'about', label: 'About', icon: FileText },
+    { id: 'blog', label: 'Blog', icon: FileText },
+    { id: 'products', label: 'Our Products', icon: Package, hasDropdown: false },
     { id: 'contact', label: 'Contact', icon: MessageSquare },
+    { id: 'franchise', label: 'Franchise Enquiries', icon: Store },
     { id: 'users', label: 'Users', icon: Users },
   ];
 
@@ -30,6 +33,53 @@ const AdminLayout = ({ children, onNavigate, activePage = 'dashboard', onLogout 
           
           <nav className="space-y-1">
             {menuItems.map((item) => {
+              if (item.hasDropdown) {
+                const isParentActive = activePage === item.id;
+                return (
+                  <div key={item.id} className="space-y-1">
+                    <button 
+                      onClick={() => setIsProductsDropdownOpen(!isProductsDropdownOpen)}
+                      className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-lg transition-all ${
+                        isParentActive ? 'bg-[#FFD147] text-black' : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <item.icon size={18} className={isParentActive ? 'text-black' : 'text-gray-500'} />
+                        {item.label}
+                      </div>
+                      <ChevronDown 
+                        size={16} 
+                        className={`transition-transform duration-200 ${isParentActive ? 'text-black' : 'text-gray-400'} ${
+                          isProductsDropdownOpen ? 'rotate-180' : ''
+                        }`} 
+                      />
+                    </button>
+
+                    {isProductsDropdownOpen && (
+                      <div className="pl-4 space-y-1 py-1">
+                        {item.subItems.map((sub) => {
+                          const isSubActive = activePage === sub.id;
+                          return (
+                            <button
+                              key={sub.id}
+                              onClick={() => onNavigate('admin', sub.id)}
+                              className={`w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold rounded-lg transition-all ${
+                                isSubActive 
+                                  ? 'bg-amber-100 text-black font-bold' 
+                                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                              }`}
+                            >
+                              <sub.icon size={15} className={isSubActive ? 'text-black' : 'text-gray-500'} />
+                              {sub.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               const isActive = activePage === item.id;
               return (
                 <button 
@@ -43,7 +93,6 @@ const AdminLayout = ({ children, onNavigate, activePage = 'dashboard', onLogout 
                     <item.icon size={18} className={isActive ? 'text-black' : 'text-gray-500'} />
                     {item.label}
                   </div>
-                  {item.hasDropdown && <ChevronDown size={16} className={isActive ? 'text-black' : 'text-gray-400'} />}
                 </button>
               );
             })}

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Star, ChevronRight, ChevronUp, ShoppingCart, Filter } from "lucide-react";
+import { Heart, Star, ChevronRight, ChevronUp, ShoppingCart, Filter, Package } from "lucide-react";
 import { products } from "../data/products.js";
 
 const container = {
@@ -15,7 +15,7 @@ const card = {
 
 function ProductCard({ product, onNavigate, onAddToCart }) {
   const [wished, setWished] = useState(false);
-  const Icon = product.icon;
+  const Icon = product.icon || Package;
 
   const handleCardClick = () => {
     onNavigate?.("product", product.id);
@@ -29,7 +29,7 @@ function ProductCard({ product, onNavigate, onAddToCart }) {
     >
       <div
         onClick={handleCardClick}
-        className={`relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br ${product.art} ${product.image ? 'p-0' : 'p-6 sm:p-8'}`}
+        className={`relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br ${product.art || "from-amber-400 to-orange-500"} ${product.image ? 'p-0' : 'p-6 sm:p-8'}`}
       >
         {!product.image && (
           <motion.div
@@ -46,7 +46,7 @@ function ProductCard({ product, onNavigate, onAddToCart }) {
             alt={product.name}
             whileHover={{ scale: 1.08 }}
             transition={{ type: "spring", stiffness: 260, damping: 15 }}
-            className="absolute inset-0 z-0 h-full w-full object-cover"
+            className="absolute inset-0 z-0 h-full w-full object-contain"
           />
         )}
       </div>
@@ -82,7 +82,7 @@ function ProductCard({ product, onNavigate, onAddToCart }) {
 
         <div className="flex items-center gap-1 text-[11px] text-brand-ink/60 sm:text-xs">
           <Star size={12} className="fill-amber-400 text-amber-400 sm:size-[13px]" />
-          {product.rating}
+          {product.rating ?? 4.5}
         </div>
 
         <div className="mt-0.5 flex items-baseline gap-1.5 sm:mt-1 sm:gap-2">
@@ -111,21 +111,36 @@ const filterOptions = ["All", "Under ₹499", "Top Rated", "Big Discounts"];
 export default function TopPicks({ onNavigate, onAddToCart }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [apiProducts, setApiProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/api/products?limit=20")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiProducts(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching top picks:", err));
+  }, []);
 
   const handleViewAll = () => {
     onNavigate?.("new-arrivals");
   };
 
+  const apiNewArrivals = apiProducts.filter((p) => p.isNewArrival);
+  const allNewArrivalProducts = [...apiNewArrivals, ...products];
+
   // Determine which products to display
-  let displayedProducts = isExpanded ? products : products.slice(0, 6);
+  let displayedProducts = isExpanded ? allNewArrivalProducts : allNewArrivalProducts.slice(0, 6);
 
   if (isExpanded) {
     if (activeFilter === "Under ₹499") {
-      displayedProducts = products.filter((p) => p.price <= 499);
+      displayedProducts = allNewArrivalProducts.filter((p) => p.price <= 499);
     } else if (activeFilter === "Top Rated") {
-      displayedProducts = products.filter((p) => p.rating >= 4.5);
+      displayedProducts = allNewArrivalProducts.filter((p) => (p.rating ?? 4.5) >= 4.5);
     } else if (activeFilter === "Big Discounts") {
-      displayedProducts = products.filter((p) => p.discount >= 25);
+      displayedProducts = allNewArrivalProducts.filter((p) => p.discount >= 25);
     }
   }
 

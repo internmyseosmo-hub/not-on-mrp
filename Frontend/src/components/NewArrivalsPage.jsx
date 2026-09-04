@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Sparkles,
@@ -12,13 +12,29 @@ import {
 import { products } from "../data/products.js";
 
 export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
-  const [activeFilter, setActiveFilter] = useState("All"); // 'All' | 'Under ₹499' | 'Top Rated' | 'Big Discounts'
+  const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
+  const [apiProducts, setApiProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiProducts(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
+
+  // Combine API products tagged as New Arrival with all existing sample products
+  const newArrivalApiProducts = apiProducts.filter((p) => p.isNewArrival);
+  const combinedProducts = [...newArrivalApiProducts, ...products];
 
   // Filtering
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = combinedProducts.filter((product) => {
     if (activeFilter === "Under ₹499") return product.price < 500;
-    if (activeFilter === "Top Rated") return product.rating >= 4.5;
+    if (activeFilter === "Top Rated") return (product.rating ?? 4.5) >= 4.5;
     if (activeFilter === "Big Discounts") return product.discount >= 25;
     return true;
   });
@@ -27,7 +43,7 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (sortBy === "priceLow") return a.price - b.price;
     if (sortBy === "priceHigh") return b.price - a.price;
-    if (sortBy === "rating") return b.rating - a.rating;
+    if (sortBy === "rating") return (b.rating ?? 4.5) - (a.rating ?? 4.5);
     return b.id - a.id; // newest (highest id first)
   });
 
@@ -134,7 +150,7 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
                   >
                     {!product.image && (
                       <div
-                        className={`absolute inset-0 bg-gradient-to-br ${product.art} opacity-90`}
+                        className={`absolute inset-0 bg-gradient-to-br ${product.art || "from-amber-400 to-orange-500"} opacity-90`}
                       />
                     )}
 
@@ -167,8 +183,8 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
                     {/* Rating */}
                     <div className="mt-1 flex items-center gap-1 text-[11px] font-bold text-gray-600">
                       <Star size={12} className="fill-amber-400 text-amber-400" />
-                      <span>{product.rating}</span>
-                      <span className="text-gray-400">({product.reviewsCount})</span>
+                      <span>{product.rating ?? 4.5}</span>
+                      <span className="text-gray-400">({product.reviewsCount ?? 0})</span>
                     </div>
 
                     {/* Price */}

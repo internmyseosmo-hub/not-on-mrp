@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -24,7 +24,10 @@ export default function ProductDetailPage({
   onNavigate,
   onAddToCart,
 }) {
-  const product = products.find((p) => p.id === productId) || products[0];
+  const [product, setProduct] = useState(() => {
+    return products.find((p) => p.id === productId) || products[0];
+  });
+  const [apiProducts, setApiProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'specs' | 'reviews'
   const [pincode, setPincode] = useState("");
@@ -33,8 +36,44 @@ export default function ProductDetailPage({
   const [addedToCartToast, setAddedToCartToast] = useState(false);
   const [buyNowModal, setBuyNowModal] = useState(false);
 
-  const Icon = product.icon || Package;
-  const savingsAmount = product.mrp - product.price;
+  useEffect(() => {
+    // 1. Check local mock products
+    const local = products.find((p) => p.id === productId);
+    if (local) {
+      setProduct(local);
+    }
+
+    // 2. Fetch all products to populate related products & resolve API product
+    fetch("http://127.0.0.1:3000/api/products?limit=100")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiProducts(data.data);
+          if (!local) {
+            const found = data.data.find(
+              (p) => p.id === productId || String(p._id) === String(productId)
+            );
+            if (found) setProduct(found);
+          }
+        }
+      })
+      .catch((err) => console.error("Error fetching products:", err));
+
+    // 3. Directly fetch this specific product if not found in local products
+    if (!local && productId) {
+      fetch(`http://127.0.0.1:3000/api/products/${productId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.data) {
+            setProduct(data.data);
+          }
+        })
+        .catch((err) => console.error("Error fetching product by id:", err));
+    }
+  }, [productId]);
+
+  const Icon = product?.icon || Package;
+  const savingsAmount = Math.max((product?.mrp || 0) - (product?.price || 0), 0);
 
   const handlePincodeCheck = (e) => {
     e.preventDefault();
@@ -56,8 +95,8 @@ export default function ProductDetailPage({
     setBuyNowModal(true);
   };
 
-  const relatedProducts = products
-    .filter((p) => p.id !== product.id)
+  const relatedProducts = [...apiProducts, ...products]
+    .filter((p) => p.id !== product?.id)
     .slice(0, 4);
 
   return (
@@ -178,7 +217,7 @@ export default function ProductDetailPage({
           <div className="lg:col-span-6 flex flex-col gap-4">
             <div className={`relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br shadow-inner border border-gray-100/80 transition-all duration-500 ${product.image ? 'p-0' : 'p-8'}`}>
               {/* Dynamic Gradient Art */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${product.art} opacity-90`} />
+              <div className={`absolute inset-0 bg-gradient-to-br ${product.art || "from-amber-400 via-orange-400 to-amber-500"} opacity-90`} />
 
               {/* Central Main Visual */}
               {!product.image && (
@@ -448,7 +487,7 @@ export default function ProductDetailPage({
                   </p>
                 </div>
 
-                {product.highlights && (
+                {product.highlights && product.highlights.length > 0 ? (
                   <div>
                     <h3 className="text-sm font-extrabold uppercase tracking-wider text-gray-400">
                       Key Highlights
@@ -465,6 +504,30 @@ export default function ProductDetailPage({
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <div>
+                    <h3 className="text-sm font-extrabold uppercase tracking-wider text-gray-400">
+                      Key Highlights
+                    </h3>
+                    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <div className="flex items-start gap-2.5 rounded-2xl bg-amber-50/60 p-3.5 border border-amber-100">
+                        <CheckCircle2 size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                        <span className="text-xs font-bold text-brand-ink">Guaranteed Below MRP</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 rounded-2xl bg-amber-50/60 p-3.5 border border-amber-100">
+                        <CheckCircle2 size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                        <span className="text-xs font-bold text-brand-ink">100% Quality Inspected</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 rounded-2xl bg-amber-50/60 p-3.5 border border-amber-100">
+                        <CheckCircle2 size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                        <span className="text-xs font-bold text-brand-ink">Fast Doorstep Delivery</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 rounded-2xl bg-amber-50/60 p-3.5 border border-amber-100">
+                        <CheckCircle2 size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                        <span className="text-xs font-bold text-brand-ink">Easy 7 Days Returns</span>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -475,21 +538,42 @@ export default function ProductDetailPage({
                   Technical Specifications
                 </h3>
                 <div className="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-                  {product.specifications?.map((spec, idx) => (
-                    <div
-                      key={idx}
-                      className={`grid grid-cols-12 px-4 py-3 text-xs sm:text-sm ${
-                        idx % 2 === 0 ? "bg-gray-50/50" : "bg-white"
-                      }`}
-                    >
-                      <span className="col-span-5 font-semibold text-gray-500">
-                        {spec.label}
-                      </span>
-                      <span className="col-span-7 font-bold text-brand-ink">
-                        {spec.value}
-                      </span>
-                    </div>
-                  ))}
+                  {product.specifications && product.specifications.length > 0 ? (
+                    product.specifications.map((spec, idx) => (
+                      <div
+                        key={idx}
+                        className={`grid grid-cols-12 px-4 py-3 text-xs sm:text-sm ${
+                          idx % 2 === 0 ? "bg-gray-50/50" : "bg-white"
+                        }`}
+                      >
+                        <span className="col-span-5 font-semibold text-gray-500">
+                          {spec.label}
+                        </span>
+                        <span className="col-span-7 font-bold text-brand-ink">
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-12 px-4 py-3 text-xs sm:text-sm bg-gray-50/50">
+                        <span className="col-span-5 font-semibold text-gray-500">Category</span>
+                        <span className="col-span-7 font-bold text-brand-ink">{product.category || "General Essentials"}</span>
+                      </div>
+                      <div className="grid grid-cols-12 px-4 py-3 text-xs sm:text-sm bg-white">
+                        <span className="col-span-5 font-semibold text-gray-500">Stock Status</span>
+                        <span className="col-span-7 font-bold text-emerald-600">{product.inStock !== false ? "In Stock" : "Out of Stock"}</span>
+                      </div>
+                      <div className="grid grid-cols-12 px-4 py-3 text-xs sm:text-sm bg-gray-50/50">
+                        <span className="col-span-5 font-semibold text-gray-500">Price Guarantee</span>
+                        <span className="col-span-7 font-bold text-brand-ink">Always Lower than MRP</span>
+                      </div>
+                      <div className="grid grid-cols-12 px-4 py-3 text-xs sm:text-sm bg-white">
+                        <span className="col-span-5 font-semibold text-gray-500">Discount Offered</span>
+                        <span className="col-span-7 font-bold text-brand-red">{product.discount}% OFF</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -500,10 +584,10 @@ export default function ProductDetailPage({
                   <div className="flex items-center gap-4 rounded-2xl bg-amber-50 p-5 border border-amber-100">
                     <div className="text-center">
                       <span className="font-display text-4xl font-black text-brand-ink">
-                        {product.rating}
+                        {product.rating ?? 4.5}
                       </span>
                       <div className="mt-1 flex justify-center text-amber-500">
-                        {"★".repeat(Math.floor(product.rating))}
+                        {"★".repeat(Math.max(Math.floor(product.rating ?? 4.5), 1))}
                       </div>
                       <p className="mt-1 text-[10px] font-bold text-gray-500 uppercase">
                         Overall Rating
@@ -518,30 +602,36 @@ export default function ProductDetailPage({
 
                 {/* Review Cards */}
                 <div className="mt-6 space-y-4">
-                  {product.reviews?.map((rev) => (
-                    <div
-                      key={rev.id}
-                      className="rounded-2xl bg-gray-50 p-4 border border-gray-100"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-ink text-xs font-bold text-white">
-                            {rev.author[0]}
-                          </span>
-                          <div>
-                            <p className="text-xs font-bold text-brand-ink">{rev.author}</p>
-                            <div className="flex text-amber-500 text-[10px]">
-                              {"★".repeat(rev.rating)}
+                  {product.reviews && product.reviews.length > 0 ? (
+                    product.reviews.map((rev) => (
+                      <div
+                        key={rev.id}
+                        className="rounded-2xl bg-gray-50 p-4 border border-gray-100"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-ink text-xs font-bold text-white">
+                              {rev.author[0]}
+                            </span>
+                            <div>
+                              <p className="text-xs font-bold text-brand-ink">{rev.author}</p>
+                              <div className="flex text-amber-500 text-[10px]">
+                                {"★".repeat(rev.rating)}
+                              </div>
                             </div>
                           </div>
+                          <span className="text-[10px] text-gray-400 font-medium">{rev.date}</span>
                         </div>
-                        <span className="text-[10px] text-gray-400 font-medium">{rev.date}</span>
+                        <p className="mt-2 text-xs text-gray-700 leading-relaxed font-medium">
+                          "{rev.comment}"
+                        </p>
                       </div>
-                      <p className="mt-2 text-xs text-gray-700 leading-relaxed font-medium">
-                        "{rev.comment}"
-                      </p>
+                    ))
+                  ) : (
+                    <div className="rounded-2xl bg-gray-50 p-6 border border-gray-100 text-center text-xs text-gray-500">
+                      Be the first verified customer to review this product!
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             )}

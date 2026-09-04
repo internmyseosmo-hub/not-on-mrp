@@ -32,83 +32,35 @@ import AdminDeals from "./admin/DealsAndOffers.jsx";
 import AdminLogin from "./admin/Login.jsx";
 import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminDashboard from "./admin/Dashboard.jsx";
+import AdminAbout from "./admin/About.jsx";
 import AdminBlog from "./admin/Blog.jsx";
 import AdminProduct from "./admin/Product.jsx";
 import AdminContact from "./admin/Contact.jsx";
 import AdminUser from "./admin/User.jsx";
+import AdminFranchise from "./admin/AdminFranchise.jsx";
 
 function getRouteFromPath() {
-  const path = decodeURIComponent(window.location.pathname.replace(/^\/+/, ""));
+  let path = decodeURIComponent(window.location.pathname.replace(/^\/+/, ""));
+  path = path.replace(/\/+$/, "");
+  
   if (!path || path === "home") {
     return { page: "home", param: null };
   }
   if (path === "deals") {
     return { page: "deals", param: null };
   }
-  if (path === "contact") {
-    return { page: "contact", param: null };
+  const parts = path.split("/");
+  const page = parts[0];
+  const param = parts.length > 1 ? parts[1] : null;
+  if (page === "product" || page === "blog-post") {
+    return { page, param: Number(param) };
   }
-  if (path === "catalog") {
-    return { page: "catalog", param: "All" };
-  }
-  if (path.startsWith("catalog/")) {
-    const category = path.replace("catalog/", "");
-    return { page: "catalog", param: category || "All" };
-  }
-  if (path === "new-arrivals") {
-    return { page: "new-arrivals", param: null };
-  }
-  if (path === "about") {
-    return { page: "about", param: null };
-  }
-  if (path === "blog") {
-    return { page: "blog", param: null };
-  }
-  if (path.startsWith("blog/")) {
-    const id = parseInt(path.split("/")[1], 10);
-    return { page: "blog-post", param: isNaN(id) ? 1 : id };
-  }
-  if (path === "franchise") {
-    return { page: "franchise", param: null };
-  }
-  if (path === "apply-franchise") {
-    return { page: "apply-franchise", param: null };
-  }
-  if (path === "cart") {
-    return { page: "cart", param: null };
-  }
-  if (path === "wishlist") {
-    return { page: "wishlist", param: null };
-  }
-  if (path === "checkout") {
-    return { page: "checkout", param: null };
-  }
-  if (path === "login") {
-    return { page: "login", param: null };
-  }
-  if (path === "account") {
-    return { page: "account", param: null };
-  }
-  if (path === "track-order") {
-    return { page: "track-order", param: null };
-  }
-  if (path === "admin" || path === "admin/") {
-    return { page: "admin", param: "dashboard" };
-  }
-  if (path.startsWith("admin/")) {
-    const sub = path.replace("admin/", "");
-    return { page: "admin", param: sub };
-  }
-  if (path.startsWith("product/")) {
-    const id = parseInt(path.split("/")[1], 10);
-    return { page: "product", param: isNaN(id) ? 1 : id };
-  }
-  return { page: "home", param: null };
+  return { page, param };
 }
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("home");
-  const [selectedProductId, setSelectedProductId] = useState(1);
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -402,15 +354,17 @@ export default function App() {
           >
             {adminSubpage === "dashboard" && <AdminDashboard />}
             {adminSubpage === "home" && <AdminHome onNavigate={navigateTo} />}
+            {adminSubpage === "about" && <AdminAbout />}
             {adminSubpage === "blog" && <AdminBlog />}
             {adminSubpage === "products" && <AdminProduct />}
             {adminSubpage === "deals" && <AdminDeals onNavigate={navigateTo} />}
+            {adminSubpage === "new-arrivals" && <AdminProduct />}
             {adminSubpage === "contact" && <AdminContact />}
+            {adminSubpage === "franchise" && <AdminFranchise />}
             {adminSubpage === "users" && <AdminUser />}
           </AdminLayout>
         )}
       </main>
-
       {!currentPage.startsWith("admin") && (
         <>
           {/* Comprehensive Footer */}

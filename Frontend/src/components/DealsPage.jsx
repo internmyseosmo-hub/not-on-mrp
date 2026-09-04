@@ -16,6 +16,7 @@ import {
   Headphones,
   ShoppingCart,
   Star,
+  Package,
 } from "lucide-react";
 import { products } from "../data/products.js";
 
@@ -42,6 +43,18 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
   const [copiedCode, setCopiedCode] = useState(false);
   const [activeTab, setActiveTab] = useState("All");
   const [addedProductId, setAddedProductId] = useState(null);
+  const [apiProducts, setApiProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/api/products?limit=100")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiProducts(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching deals products:", err));
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -77,8 +90,12 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
     }
   };
 
+  // Combine API deals with local products
+  const apiDealProducts = apiProducts.filter((p) => p.isDeal || p.discount >= 20);
+  const combinedDealProducts = [...apiDealProducts, ...products];
+
   // Filter products for the deals section
-  const dealProducts = products.filter((p) => {
+  const dealProducts = combinedDealProducts.filter((p) => {
     if (activeTab === "Under ₹99") return p.price <= 199;
     if (activeTab === "50%+ Off" || activeTab === "60%+ Off") return p.discount >= 20;
     if (activeTab === "Kitchenware" || activeTab === "Kitchen")
@@ -91,8 +108,8 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
       return (
         p.category === "Storage & Organizers" ||
         p.category === "Home & Organization" ||
-        p.name.toLowerCase().includes("crates") ||
-        p.name.toLowerCase().includes("organizer")
+        (p.name && p.name.toLowerCase().includes("crates")) ||
+        (p.name && p.name.toLowerCase().includes("organizer"))
       );
     if (activeTab === "Home Essentials")
       return (
@@ -108,13 +125,17 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
         p.category === "Laundry & Houseware"
       );
     if (activeTab === "Toys & Games")
-      return p.category === "Toys & Games" || p.id % 2 === 0;
+      return (
+        p.category === "Toys & Games" ||
+        p.category === "Toys" ||
+        p.id % 2 === 0
+      );
     if (activeTab === "Stationery")
       return (
         p.category === "Office & Stationery" ||
         p.category === "Stationery" ||
-        p.name.toLowerCase().includes("pen") ||
-        p.name.toLowerCase().includes("desk")
+        (p.name && p.name.toLowerCase().includes("pen")) ||
+        (p.name && p.name.toLowerCase().includes("desk"))
       );
     return true;
   });
@@ -657,7 +678,9 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
 
           {/* Product Grid */}
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {dealProducts.slice(0, 8).map((product) => (
+            {dealProducts.map((product) => {
+              const Icon = product.icon || Package;
+              return (
               <div
                 key={product.id}
                 className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-lg"
@@ -669,18 +692,18 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
                 >
                   {!product.image && (
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${product.art} opacity-90`}
+                      className={`absolute inset-0 bg-gradient-to-br ${product.art || "from-amber-400 to-orange-500"} opacity-90`}
                     />
                   )}
                   {product.image ? (
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="absolute inset-0 z-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                     />
                   ) : (
                     <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-2xl bg-white/25 backdrop-blur-xs transition-transform group-hover:scale-105">
-                      {product.icon && <product.icon size={56} className="text-white drop-shadow-md" />}
+                      <Icon size={56} className="text-white drop-shadow-md" />
                     </div>
                   )}
                 </div>
@@ -706,7 +729,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
                     {/* Rating */}
                     <div className="mt-1 flex items-center gap-1 text-xs text-amber-500">
                       <Star size={12} className="fill-amber-400 text-amber-400" />
-                      <span className="font-bold text-gray-700">{product.rating}</span>
+                      <span className="font-bold text-gray-700">{product.rating ?? 4.5}</span>
                       <span className="text-[10px] text-gray-400">({product.reviewsCount || product.reviews || 42})</span>
                     </div>
                   </div>
@@ -736,7 +759,8 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         </div>
 

@@ -8,15 +8,9 @@ import {
   ArrowLeft,
   Sparkles,
 } from "lucide-react";
-import { products } from "../data/products.js";
 
 export default function WishlistPage({ onNavigate, onAddToCart }) {
-  // Initial demo wishlist products
-  const [wishlistItems, setWishlistItems] = useState([
-    products[0],
-    products[2] || products[1],
-    products[4] || products[0],
-  ]);
+  const [wishlistItems, setWishlistItems] = useState([]);
 
   const removeFromWishlist = (id) => {
     setWishlistItems((prev) => prev.filter((item) => item.id !== id));

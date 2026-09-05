@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Star, ChevronRight, ChevronUp, ShoppingCart, Filter, Package } from "lucide-react";
-import { products } from "../data/products.js";
 
 const container = {
   hidden: {},
@@ -128,8 +127,7 @@ export default function TopPicks({ onNavigate, onAddToCart }) {
     onNavigate?.("new-arrivals");
   };
 
-  const apiNewArrivals = apiProducts.filter((p) => p.isNewArrival);
-  const allNewArrivalProducts = [...apiNewArrivals, ...products];
+  const allNewArrivalProducts = apiProducts;
 
   // Determine which products to display
   let displayedProducts = isExpanded ? allNewArrivalProducts : allNewArrivalProducts.slice(0, 6);

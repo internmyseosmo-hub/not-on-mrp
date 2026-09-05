@@ -6,7 +6,7 @@ export default function FranchiseApplicationPage({ onNavigate }) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    phone: "",
+    phone: "+91 ",
     city: "",
     state: "",
     investmentBudget: "",
@@ -19,7 +19,29 @@ export default function FranchiseApplicationPage({ onNavigate }) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (name === "phone") {
+      let val = value;
+      
+      if (!val.startsWith("+91 ")) {
+        if (val === "+91" || val === "+9" || val === "+" || val === "") {
+          val = "+91 ";
+        } else {
+          const rawDigits = val.replace(/\D/g, "");
+          if (rawDigits.startsWith("91") && rawDigits.length > 10) {
+            val = "+91 " + rawDigits.substring(2);
+          } else {
+            val = "+91 " + rawDigits;
+          }
+        }
+      }
+      
+      const digits = val.substring(4).replace(/\D/g, "").slice(0, 10);
+      setFormData({ ...formData, phone: "+91 " + digits });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -144,7 +166,7 @@ export default function FranchiseApplicationPage({ onNavigate }) {
                       <div className="space-y-1.5">
                         <label className="text-sm font-bold text-gray-700">Phone Number *</label>
                         <div className="relative">
-                          <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-transparent transition-all font-medium" placeholder="+91 00000 00000" />
+                          <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-transparent transition-all font-medium" placeholder="" />
                           <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                         </div>
                       </div>

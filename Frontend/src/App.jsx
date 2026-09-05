@@ -38,29 +38,69 @@ import AdminProduct from "./admin/Product.jsx";
 import AdminContact from "./admin/Contact.jsx";
 import AdminUser from "./admin/User.jsx";
 import AdminFranchise from "./admin/AdminFranchise.jsx";
+import { Helmet } from "react-helmet-async";
 
 function getRouteFromPath() {
   let path = decodeURIComponent(window.location.pathname.replace(/^\/+/, ""));
   path = path.replace(/\/+$/, "");
-  
+
   if (!path || path === "home") {
     return { page: "home", param: null };
   }
   if (path === "deals") {
     return { page: "deals", param: null };
   }
-  const parts = path.split("/");
-  const page = parts[0];
-  const param = parts.length > 1 ? parts[1] : null;
-  if (page === "product" || page === "blog-post") {
-    return { page, param: Number(param) };
+  if (path === "about") {
+    return { page: "about", param: null };
   }
-  return { page, param };
+  if (path === "blog") {
+    return { page: "blog", param: null };
+  }
+  if (path.startsWith("blog/")) {
+    const id = parseInt(path.split("/")[1], 10);
+    return { page: "blog-post", param: isNaN(id) ? 1 : id };
+  }
+  if (path === "franchise") {
+    return { page: "franchise", param: null };
+  }
+  if (path === "apply-franchise") {
+    return { page: "apply-franchise", param: null };
+  }
+  if (path === "cart") {
+    return { page: "cart", param: null };
+  }
+  if (path === "wishlist") {
+    return { page: "wishlist", param: null };
+  }
+  if (path === "checkout") {
+    return { page: "checkout", param: null };
+  }
+  if (path === "login") {
+    return { page: "login", param: null };
+  }
+  if (path === "account") {
+    return { page: "account", param: null };
+  }
+  if (path === "track-order") {
+    return { page: "track-order", param: null };
+  }
+  if (path === "admin" || path === "admin/") {
+    return { page: "admin", param: "dashboard" };
+  }
+  if (path.startsWith("admin/")) {
+    const sub = path.replace("admin/", "");
+    return { page: "admin", param: sub };
+  }
+  if (path.startsWith("product/")) {
+    const id = parseInt(path.split("/")[1], 10);
+    return { page: "product", param: isNaN(id) ? 1 : id };
+  }
+  return { page: "home", param: null };
 }
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("home");
-  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [selectedProductId, setSelectedProductId] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -90,13 +130,13 @@ export default function App() {
     setCurrentUser(null);
     localStorage.removeItem("token");
   };
-  
+
   const handleAdminLogin = () => {
     setIsAdminLoggedIn(true);
     if (currentPage === "admin" && adminSubpage !== "login") {
-       // already on an admin route, just re-render
+      // already on an admin route, just re-render
     } else {
-       navigateTo("admin", "dashboard");
+      navigateTo("admin", "dashboard");
     }
   };
 
@@ -209,6 +249,11 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-white font-body text-brand-ink selection:bg-brand-yellow selection:text-brand-ink pb-16 md:pb-0">
+      <Helmet>
+        <title>Not On MRP | Best Deals on Electronics, Car Care and More</title>
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="Get the best deals on premium car care, electronics, and daily essentials at Not On MRP. Enjoy guaranteed prices below Maximum Retail Price. Shop now!" />
+      </Helmet>
       {!currentPage.startsWith("admin") && (
         <>
           {/* Slide-out navigation drawer for mobile/tablet */}
@@ -299,9 +344,9 @@ export default function App() {
         )}
 
         {currentPage === "blog-post" && (
-          <BlogPostPage 
-            postId={typeof selectedProductId === 'number' ? selectedProductId : 1} 
-            onNavigate={navigateTo} 
+          <BlogPostPage
+            postId={typeof selectedProductId === 'number' ? selectedProductId : 1}
+            onNavigate={navigateTo}
           />
         )}
 
@@ -343,9 +388,9 @@ export default function App() {
         )}
 
         {currentPage === "admin" && isAdminLoggedIn && (
-          <AdminLayout 
-            activePage={adminSubpage} 
-            onNavigate={navigateTo} 
+          <AdminLayout
+            activePage={adminSubpage}
+            onNavigate={navigateTo}
             onLogout={() => {
               setIsAdminLoggedIn(false);
               localStorage.removeItem("adminToken");
@@ -358,13 +403,13 @@ export default function App() {
             {adminSubpage === "blog" && <AdminBlog />}
             {adminSubpage === "products" && <AdminProduct />}
             {adminSubpage === "deals" && <AdminDeals onNavigate={navigateTo} />}
-            {adminSubpage === "new-arrivals" && <AdminProduct />}
             {adminSubpage === "contact" && <AdminContact />}
             {adminSubpage === "franchise" && <AdminFranchise />}
             {adminSubpage === "users" && <AdminUser />}
           </AdminLayout>
         )}
       </main>
+
       {!currentPage.startsWith("admin") && (
         <>
           {/* Comprehensive Footer */}

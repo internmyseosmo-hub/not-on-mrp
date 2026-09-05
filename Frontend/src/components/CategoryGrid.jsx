@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -16,80 +16,7 @@ import {
   Sprout,
   LayoutGrid,
 } from "lucide-react";
-import { categories } from "../data/categories.js";
 
-const allCategoriesDetailed = [
-  {
-    name: "Home & Living",
-    icon: Home,
-    count: "450+ Items",
-    subcategories: ["Storage Crates", "Decor & Lighting", "Bedding & Linen", "Curtains & Rugs"],
-    color: "bg-[#FFF8E7] text-amber-800 border-amber-200/80",
-  },
-  {
-    name: "Kitchen & Dining",
-    icon: UtensilsCrossed,
-    count: "620+ Items",
-    subcategories: ["Cookware & Pans", "Water Bottles", "Tea & Coffee Mugs", "Storage Containers"],
-    color: "bg-rose-50 text-rose-800 border-rose-200/80",
-  },
-  {
-    name: "Cleaning Essentials",
-    icon: SprayCan,
-    count: "280+ Items",
-    subcategories: ["Laundry Baskets", "Floor Cleaners", "Mops & Brooms", "Dishwashers"],
-    color: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
-  },
-  {
-    name: "Stationery & Office",
-    icon: PenTool,
-    count: "310+ Items",
-    subcategories: ["Pen Organizers", "Notebooks & Diaries", "Desk Accessories", "Files & Folders"],
-    color: "bg-purple-50 text-purple-800 border-purple-200/80",
-  },
-  {
-    name: "Personal Care",
-    icon: Droplets,
-    count: "390+ Items",
-    subcategories: ["Skincare", "Haircare Essentials", "Bath & Body", "Grooming Kits"],
-    color: "bg-sky-50 text-sky-800 border-sky-200/80",
-  },
-  {
-    name: "Toys & Games",
-    icon: Gamepad2,
-    count: "240+ Items",
-    subcategories: ["Board Games", "Educational Toys", "Action Figures", "Puzzles"],
-    color: "bg-amber-50 text-amber-800 border-amber-200/80",
-  },
-  {
-    name: "Electricals",
-    icon: Zap,
-    count: "190+ Items",
-    subcategories: ["Extension Cords", "LED Desk Lamps", "Smart Plugs", "Chargers & Cables"],
-    color: "bg-yellow-50 text-yellow-800 border-yellow-200/80",
-  },
-  {
-    name: "Hardware & Tools",
-    icon: Wrench,
-    count: "150+ Items",
-    subcategories: ["Toolkits", "Screwdriver Sets", "Measuring Tapes", "Adhesive Tapes"],
-    color: "bg-gray-100 text-gray-800 border-gray-200/80",
-  },
-  {
-    name: "Car & Bike",
-    icon: Car,
-    count: "170+ Items",
-    subcategories: ["Car Wash Care", "Phone Mounts", "Helmets & Safety", "Seat Cushions"],
-    color: "bg-indigo-50 text-indigo-800 border-indigo-200/80",
-  },
-  {
-    name: "Garden & Outdoor",
-    icon: Sprout,
-    count: "210+ Items",
-    subcategories: ["Planters & Pots", "Watering Cans", "Garden Tools", "Seeds & Soil"],
-    color: "bg-green-50 text-green-800 border-green-200/80",
-  },
-];
 
 const container = {
   hidden: {},
@@ -106,8 +33,34 @@ const item = {
 export default function CategoryGrid({ onNavigate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [apiCategories, setApiCategories] = useState([]);
 
-  const filteredCategories = allCategoriesDetailed.filter((cat) =>
+  useEffect(() => {
+    fetch("http://127.0.0.1:3000/api/categories/all")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiCategories(data.data);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch API categories", err));
+  }, []);
+
+  const stripCategories = apiCategories.map((cat) => ({
+    name: cat.name,
+    image: cat.image,
+  }));
+
+  const mergedDetailedCategories = apiCategories.map((cat) => ({
+    name: cat.name,
+    icon: LayoutGrid,
+    image: cat.image,
+    count: "New",
+    subcategories: [],
+    color: "bg-blue-50 text-blue-800 border-blue-200/80",
+  }));
+
+  const filteredCategories = mergedDetailedCategories.filter((cat) =>
     cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cat.subcategories.some((sub) => sub.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -130,7 +83,7 @@ export default function CategoryGrid({ onNavigate }) {
         viewport={{ once: true, amount: 0.15 }}
         className="no-scrollbar flex gap-2.5 overflow-x-auto pb-2 snap-x snap-mandatory sm:grid sm:grid-cols-4 sm:gap-3 sm:pb-0 md:grid-cols-6 lg:grid-cols-11"
       >
-        {categories.map(({ name, icon: Icon, image, isViewAll }) => (
+        {stripCategories.map(({ name, icon: Icon, image, isViewAll }) => (
           <motion.button
             key={name}
             onClick={() => handleCategoryClick(name, isViewAll)}
@@ -222,7 +175,7 @@ export default function CategoryGrid({ onNavigate }) {
               {/* Category Grid List */}
               <div className="no-scrollbar overflow-y-auto p-6 sm:p-8">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
-                  {filteredCategories.map(({ name, icon: Icon, count, subcategories, color }) => (
+                  {filteredCategories.map(({ name, icon: Icon, image, count, subcategories, color }) => (
                     <div
                       key={name}
                       onClick={() => {
@@ -233,8 +186,12 @@ export default function CategoryGrid({ onNavigate }) {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-xs">
-                            <Icon size={22} strokeWidth={2} />
+                          <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white shadow-xs">
+                            {image ? (
+                              <img src={image} alt={name} className="h-full w-full object-cover" />
+                            ) : (
+                              <Icon size={22} strokeWidth={2} />
+                            )}
                           </span>
                           <div>
                             <h4 className="font-display text-sm font-bold text-gray-900 sm:text-base">

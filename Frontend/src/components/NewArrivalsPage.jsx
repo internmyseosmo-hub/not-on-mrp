@@ -9,8 +9,6 @@ import {
   ArrowLeft,
   Package,
 } from "lucide-react";
-import { products } from "../data/products.js";
-
 export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
@@ -27,9 +25,8 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
       .catch((err) => console.error("Error fetching products:", err));
   }, []);
 
-  // Combine API products tagged as New Arrival with all existing sample products
-  const newArrivalApiProducts = apiProducts.filter((p) => p.isNewArrival);
-  const combinedProducts = [...newArrivalApiProducts, ...products];
+  // Only use API products tagged as New Arrival
+  const combinedProducts = apiProducts.filter((p) => p.isNewArrival);
 
   // Filtering
   const filteredProducts = combinedProducts.filter((product) => {

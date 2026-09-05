@@ -13,20 +13,9 @@ import {
   ArrowLeft,
   CheckCircle2,
 } from "lucide-react";
-import { products } from "../data/products.js";
 
 export default function CartPage({ onNavigate, cartCount = 0 }) {
-  // Demo initial cart items if cartCount > 0 or default sample items
-  const [cartItems, setCartItems] = useState([
-    {
-      ...products[0],
-      quantity: 2,
-    },
-    {
-      ...products[1],
-      quantity: 1,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
   const [couponCode, setCouponCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);

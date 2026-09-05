@@ -18,7 +18,6 @@ import {
   Star,
   Package,
 } from "lucide-react";
-import { products } from "../data/products.js";
 
 // Import generated deal images
 import dealsHeroCart from "../assets/deals_hero_cart.png";
@@ -90,9 +89,8 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
     }
   };
 
-  // Combine API deals with local products
-  const apiDealProducts = apiProducts.filter((p) => p.isDeal || p.discount >= 20);
-  const combinedDealProducts = [...apiDealProducts, ...products];
+  // Only use API deals
+  const combinedDealProducts = apiProducts.filter((p) => p.isDeal || p.discount >= 20);
 
   // Filter products for the deals section
   const dealProducts = combinedDealProducts.filter((p) => {

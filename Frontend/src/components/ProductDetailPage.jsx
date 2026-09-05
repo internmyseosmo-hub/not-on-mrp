@@ -17,16 +17,13 @@ import {
   ChevronRight,
   Package,
 } from "lucide-react";
-import { products } from "../data/products.js";
 
 export default function ProductDetailPage({
   productId,
   onNavigate,
   onAddToCart,
 }) {
-  const [product, setProduct] = useState(() => {
-    return products.find((p) => p.id === productId) || products[0];
-  });
+  const [product, setProduct] = useState(null);
   const [apiProducts, setApiProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("overview"); // 'overview' | 'specs' | 'reviews'
@@ -37,30 +34,22 @@ export default function ProductDetailPage({
   const [buyNowModal, setBuyNowModal] = useState(false);
 
   useEffect(() => {
-    // 1. Check local mock products
-    const local = products.find((p) => p.id === productId);
-    if (local) {
-      setProduct(local);
-    }
-
-    // 2. Fetch all products to populate related products & resolve API product
+    // 1. Fetch all products to populate related products & resolve API product
     fetch("http://127.0.0.1:3000/api/products?limit=100")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
           setApiProducts(data.data);
-          if (!local) {
-            const found = data.data.find(
-              (p) => p.id === productId || String(p._id) === String(productId)
-            );
-            if (found) setProduct(found);
-          }
+          const found = data.data.find(
+            (p) => p.id === productId || String(p._id) === String(productId)
+          );
+          if (found) setProduct(found);
         }
       })
       .catch((err) => console.error("Error fetching products:", err));
 
-    // 3. Directly fetch this specific product if not found in local products
-    if (!local && productId) {
+    // 2. Directly fetch this specific product
+    if (productId) {
       fetch(`http://127.0.0.1:3000/api/products/${productId}`)
         .then((res) => res.json())
         .then((data) => {
@@ -95,9 +84,20 @@ export default function ProductDetailPage({
     setBuyNowModal(true);
   };
 
-  const relatedProducts = [...apiProducts, ...products]
+  const relatedProducts = apiProducts
     .filter((p) => p.id !== product?.id)
     .slice(0, 4);
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50/60">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand-ink"></div>
+          <p className="text-gray-500 font-medium">Loading Product...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/60 pb-20 pt-4">

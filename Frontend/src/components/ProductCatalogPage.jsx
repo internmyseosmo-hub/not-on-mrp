@@ -22,71 +22,7 @@ import {
   Lamp,
   Utensils,
 } from "lucide-react";
-import { products } from "../data/products.js";
 
-// Category Meta Mapping with Lucide icons and vibrant gradient styling
-const CATEGORY_META = {
-  "Home & Organization": {
-    icon: Home,
-    tagline: "Declutter closets, desks, and rooms with modular strength.",
-    gradient: "from-sky-400 via-blue-500 to-indigo-600",
-    colorBg: "bg-sky-50 text-sky-800 border-sky-200",
-  },
-  "Office & Stationery": {
-    icon: PenTool,
-    tagline: "Sleek desk organizers, accessories, and writing tools.",
-    gradient: "from-slate-600 via-zinc-700 to-slate-900",
-    colorBg: "bg-purple-50 text-purple-800 border-purple-200",
-  },
-  "Laundry & Houseware": {
-    icon: ShoppingBasket,
-    tagline: "Breathable hampers, heavy-duty baskets, and daily houseware.",
-    gradient: "from-pink-400 via-rose-500 to-red-500",
-    colorBg: "bg-rose-50 text-rose-800 border-rose-200",
-  },
-  "Drinkware & Hydration": {
-    icon: Droplets,
-    tagline: "Stainless steel bottles, insulated mugs, and tumblers.",
-    gradient: "from-emerald-400 via-teal-500 to-cyan-600",
-    colorBg: "bg-teal-50 text-teal-800 border-teal-200",
-  },
-  "Bags & Accessories": {
-    icon: Backpack,
-    tagline: "Ergonomic laptop backpacks, travel totes, and pouches.",
-    gradient: "from-amber-500 via-orange-600 to-rose-600",
-    colorBg: "bg-amber-50 text-amber-800 border-amber-200",
-  },
-  "Home & Comfort": {
-    icon: Sparkles,
-    tagline: "Memory foam cushions, ergonomic seating, and relaxation.",
-    gradient: "from-purple-500 via-indigo-600 to-violet-700",
-    colorBg: "bg-indigo-50 text-indigo-800 border-indigo-200",
-  },
-  "Kitchen & Appliances": {
-    icon: Zap,
-    tagline: "USB blenders, electronic tools, and modern kitchen tech.",
-    gradient: "from-teal-400 via-emerald-500 to-green-600",
-    colorBg: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  },
-  "Tech & Lighting": {
-    icon: Lamp,
-    tagline: "Smart LED desk lamps, dimmable lights, and gadgets.",
-    gradient: "from-yellow-400 via-amber-500 to-orange-500",
-    colorBg: "bg-amber-50 text-amber-900 border-amber-200",
-  },
-  "Kitchen & Dining": {
-    icon: Utensils,
-    tagline: "Non-stick granite pans, cookware, and dining essentials.",
-    gradient: "from-rose-500 via-red-600 to-orange-600",
-    colorBg: "bg-red-50 text-red-800 border-red-200",
-  },
-  "Home & Bath": {
-    icon: Sparkles,
-    tagline: "Hotel-quality 600 GSM towels, bath linens, and sets.",
-    gradient: "from-cyan-400 via-sky-500 to-blue-600",
-    colorBg: "bg-cyan-50 text-cyan-800 border-cyan-200",
-  },
-};
 
 export default function ProductCatalogPage({
   onNavigate,
@@ -99,6 +35,7 @@ export default function ProductCatalogPage({
   const [minRating, setMinRating] = useState(0); // 0 | 4.5
   const [sortBy, setSortBy] = useState("popular"); // 'popular' | 'priceLow' | 'priceHigh' | 'rating'
   const [apiProducts, setApiProducts] = useState([]);
+  const [apiCategories, setApiCategories] = useState([]);
 
   useEffect(() => {
     fetch("http://127.0.0.1:3000/api/products?limit=100")
@@ -109,28 +46,20 @@ export default function ProductCatalogPage({
         }
       })
       .catch((err) => console.error("Error fetching catalog products:", err));
+
+    fetch("http://127.0.0.1:3000/api/categories/all")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setApiCategories(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching catalog categories:", err));
   }, []);
 
   useEffect(() => {
     if (initialCategory && initialCategory !== "All") {
-      const isKnownCategory =
-        CATEGORY_META[initialCategory] ||
-        [
-          "60%+ Off",
-          "70%+ Off",
-          "Weekend Special",
-          "Home Essentials",
-          "Kitchenware",
-          "Storage & Organizers",
-          "Beauty & Personal Care",
-          "Toys & Games",
-          "Stationery",
-          "Cleaning Essentials",
-          "Electricals",
-          "Hardware & Tools",
-          "Car & Bike",
-          "Garden & Outdoor",
-        ].includes(initialCategory);
+      const isKnownCategory = apiCategories.some((cat) => cat.name === initialCategory);
 
       if (isKnownCategory) {
         setSelectedCategory(initialCategory);
@@ -145,20 +74,17 @@ export default function ProductCatalogPage({
     }
   }, [initialCategory]);
 
-  // Combine API products and local sample products
-  const combinedProducts = [...apiProducts, ...products];
+  const combinedProducts = apiProducts;
 
-  // Extract unique category names from both predefined meta and all products
+  const apiCategoryNames = apiCategories.map((cat) => cat.name);
   const allCategories = Array.from(
     new Set([
-      ...Object.keys(CATEGORY_META),
+      ...apiCategoryNames,
       ...combinedProducts.map((p) => p.category).filter(Boolean),
     ])
   ).filter((cat) =>
-    combinedProducts.some(
-      (p) =>
-        (p.category || "General Essentials").toLowerCase() === cat.toLowerCase() ||
-        p.category === cat
+    apiCategoryNames.includes(cat) || combinedProducts.some(
+      (p) => p.category === cat
     )
   );
 
@@ -312,7 +238,7 @@ export default function ProductCatalogPage({
     onNavigate?.("catalog", "All");
   };
 
-  const activeCategoryMeta = CATEGORY_META[selectedCategory];
+  const activeCategoryMeta = apiCategories.find((cat) => cat.name === selectedCategory);
 
   return (
     <div className="min-h-screen bg-slate-50/60 py-8">
@@ -373,9 +299,7 @@ export default function ProductCatalogPage({
           </div>
         ) : (
           <div
-            className={`relative overflow-hidden rounded-3xl bg-gradient-to-r ${
-              activeCategoryMeta?.gradient || "from-zinc-900 to-brand-ink"
-            } p-6 text-white shadow-xl sm:p-10`}
+            className={`relative overflow-hidden rounded-3xl bg-gradient-to-r from-zinc-900 to-brand-ink p-6 text-white shadow-xl sm:p-10`}
           >
             <div className="relative z-10 max-w-2xl">
               <div className="flex items-center gap-2">
@@ -387,7 +311,7 @@ export default function ProductCatalogPage({
                 {selectedCategory}
               </h1>
               <p className="mt-2 text-xs text-white/90 sm:text-sm font-medium">
-                {activeCategoryMeta?.tagline ||
+                {activeCategoryMeta?.description ||
                   "Quality essentials carefully selected and priced lower than MRP."}
               </p>
             </div>
@@ -568,8 +492,8 @@ export default function ProductCatalogPage({
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
               {allCategories.map((catName) => {
-                const meta = CATEGORY_META[catName] || {};
-                const Icon = meta.icon || Package;
+                const apiCat = apiCategories.find(c => c.name === catName);
+                const Icon = Package;
 
                 return (
                   <motion.div
@@ -582,11 +506,13 @@ export default function ProductCatalogPage({
                     <div>
                       <div className="flex items-center justify-between">
                         <div
-                          className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${
-                            meta.gradient || "from-gray-700 to-gray-900"
-                          } text-white shadow-md`}
+                          className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-gray-700 to-gray-900 text-white shadow-md overflow-hidden`}
                         >
-                          <Icon size={24} />
+                          {apiCat?.image ? (
+                            <img src={apiCat.image} alt={catName} className="h-full w-full object-cover" />
+                          ) : (
+                            <Icon size={24} />
+                          )}
                         </div>
                       </div>
 
@@ -594,7 +520,7 @@ export default function ProductCatalogPage({
                         {catName}
                       </h3>
                       <p className="mt-1 line-clamp-2 text-xs text-gray-500 font-medium">
-                        {meta.tagline || "High quality essentials below MRP."}
+                        {apiCat?.description || "High quality essentials below MRP."}
                       </p>
                     </div>
 

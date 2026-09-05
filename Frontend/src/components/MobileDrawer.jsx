@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -15,7 +16,6 @@ import {
   Grid,
   FileText,
 } from "lucide-react";
-import { categories } from "../data/categories.js";
 
 const navLinks = [
   { label: "Home", href: "#", icon: Home },
@@ -33,6 +33,21 @@ function TagIcon(props) {
 }
 
 export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigate }) {
+  const [apiCategories, setApiCategories] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch("http://127.0.0.1:3000/api/categories/all")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data) {
+            setApiCategories(data.data);
+          }
+        })
+        .catch(err => console.error(err));
+    }
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -132,7 +147,7 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                   Shop By Category
                 </p>
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  {categories.slice(0, 8).map(({ name, icon: CatIcon, image }) => (
+                  {apiCategories.slice(0, 8).map(({ name, image }) => (
                     <button
                       key={name}
                       onClick={() => {
@@ -145,7 +160,7 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                         {image ? (
                           <img src={image} alt={name} className="h-full w-full object-cover" />
                         ) : (
-                          <CatIcon size={14} />
+                          <Package size={14} />
                         )}
                       </span>
                       <span className="truncate text-xs font-bold text-brand-ink">

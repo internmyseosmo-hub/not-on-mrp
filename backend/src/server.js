@@ -30,11 +30,6 @@ const PORT = process.env.PORT || 3000;
 // Connect to MongoDB
 connectDB();
 
-// API Routes
-app.get("/", (req, res) => {
-    res.json({ message: "API is running..." });
-});
-
 app.use("/api", apiRoutes);
 
 // Serve Static Frontend (from backend/dist)

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, Search, Navigation, Package, CheckCircle, Truck, MapPin, ChevronDown, Check, Clock, Info, Phone, Mail, MessageSquare } from 'lucide-react';
 
-const TrackOrderPage = ({ onNavigate }) => {
+const TrackOrderPage = () => {
   const [searchMethod, setSearchMethod] = useState('Order ID');
   const [searchValue, setSearchValue] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

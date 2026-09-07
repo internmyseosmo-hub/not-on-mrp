@@ -16,28 +16,30 @@ import {
   Grid,
   FileText,
 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 
 const navLinks = [
-  { label: "Home", href: "#", icon: Home },
-  { label: "About Us", href: "#", icon: Info },
-  { label: "Our Products", href: "#", icon: Package },
-  { label: "Deals & Offers", href: "#", icon: TagIcon },
-  { label: "New Arrivals", href: "#", icon: Sparkles },
-  { label: "Blog", href: "#", icon: FileText },
-  { label: "Franchise Enquiries", href: "#", icon: Phone },
-  { label: "Contact Us", href: "#", icon: Phone },
+  { label: "Home", href: "/", icon: Home },
+  { label: "About Us", href: "/about", icon: Info },
+  { label: "Our Products", href: "/catalog", icon: Package },
+  { label: "Deals & Offers", href: "/deals", icon: TagIcon },
+  { label: "New Arrivals", href: "/new-arrivals", icon: Sparkles },
+  { label: "Blog", href: "/blog", icon: FileText },
+  { label: "Franchise Enquiries", href: "/franchise", icon: Phone },
+  { label: "Contact Us", href: "/contact", icon: Phone },
 ];
 
 function TagIcon(props) {
   return <Zap {...props} />;
 }
 
-export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigate }) {
+export default function MobileDrawer({ isOpen, onClose, cartCount = 0 }) {
   const [apiCategories, setApiCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
-      fetch("http://127.0.0.1:3000/api/categories/all")
+      fetch("/api/categories/all")
         .then(res => res.json())
         .then(data => {
           if (data.success && data.data) {
@@ -92,7 +94,7 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
               <button
                 onClick={() => {
                   onClose();
-                  onNavigate?.("deals");
+                  navigate("/deals");
                 }}
                 className="w-full flex items-center justify-between rounded-xl bg-brand-red p-3.5 text-white shadow-md animate-pulseGlow cursor-pointer"
               >
@@ -112,20 +114,11 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                   Navigation
                 </p>
                 <ul className="mt-2 space-y-1">
-                  {navLinks.map(({ label, icon: Icon }) => (
+                  {navLinks.map(({ label, href, icon: Icon }) => (
                     <li key={label}>
-                      <button
-                        onClick={() => {
-                          onClose();
-                          if (label === "Franchise Enquiries") return;
-                          if (label === "Home") onNavigate?.("home");
-                          else if (label === "About Us") onNavigate?.("about");
-                          else if (label === "Deals & Offers") onNavigate?.("deals");
-                          else if (label === "Contact Us") onNavigate?.("contact");
-                          else if (label === "New Arrivals") onNavigate?.("new-arrivals");
-                          else if (label === "Blog") onNavigate?.("blog");
-                          else onNavigate?.("catalog");
-                        }}
+                      <Link
+                        to={href}
+                        onClick={onClose}
                         className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-ink transition-colors hover:bg-amber-50 active:bg-amber-100 text-left cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
@@ -135,7 +128,7 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                           {label}
                         </div>
                         <ChevronRight size={16} className="text-gray-400" />
-                      </button>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -152,7 +145,7 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                       key={name}
                       onClick={() => {
                         onClose();
-                        onNavigate("catalog", name);
+                        navigate(`/catalog/${encodeURIComponent(name)}`);
                       }}
                       className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50/50 p-2.5 transition-colors hover:border-amber-200 hover:bg-white cursor-pointer text-left"
                     >
@@ -177,26 +170,26 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0, onNavigat
                   Services & Info
                 </p>
                 <div className="mt-2 space-y-1">
-                  <a
-                    href="#"
+                  <Link
+                    to="/contact"
                     onClick={onClose}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
                   >
                     <MapPin size={16} className="text-brand-red" />
                     <span>Store Locator</span>
-                  </a>
-                  <a
-                    href="#"
+                  </Link>
+                  <Link
+                    to="/track-order"
                     onClick={onClose}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
                   >
                     <Truck size={16} className="text-brand-gold" />
                     <span>Track Order</span>
-                  </a>
+                  </Link>
                   <button
                     onClick={() => {
                       onClose();
-                      onNavigate("wishlist");
+                      navigate("/wishlist");
                     }}
                     className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
                   >

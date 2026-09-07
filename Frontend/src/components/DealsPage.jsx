@@ -30,8 +30,10 @@ import dealsBeautyBottles from "../assets/deals_beauty_bottles.png";
 import dealsToysBear from "../assets/deals_toys_bear.png";
 import dealsStationeryStand from "../assets/deals_stationery_stand.png";
 import spotlightPan from "../assets/spotlight_pan.png";
+import { useNavigate } from "react-router-dom";
 
-export default function DealsPage({ onNavigate, onAddToCart }) {
+export default function DealsPage({ onAddToCart }) {
+  const navigate = useNavigate();
   // Live Flash Sale Timer
   const [timeLeft, setTimeLeft] = useState({
     hours: 2,
@@ -45,7 +47,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
   const [apiProducts, setApiProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/api/products?limit=100")
+    fetch("/api/products?limit=100")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
@@ -427,7 +429,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
 
             {/* CTA Button */}
             <button
-              onClick={() => onNavigate?.("catalog", "60%+ Off")}
+              onClick={() => navigate("/catalog/60%25%2B%20Off")}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-black py-3 text-xs font-extrabold text-white shadow-lg transition-all hover:bg-gray-900 hover:shadow-xl active:scale-95 cursor-pointer"
             >
               <span>SHOP NOW</span>
@@ -496,7 +498,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
 
             {/* CTA Button */}
             <button
-              onClick={() => onNavigate?.("catalog", "70%+ Off")}
+              onClick={() => navigate("/catalog/70%25%2B%20Off")}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-black py-3 text-xs font-extrabold text-white shadow-lg transition-all hover:bg-gray-900 hover:shadow-xl active:scale-95 cursor-pointer"
             >
               <span>SHOP NOW</span>
@@ -552,7 +554,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
 
             {/* CTA Button */}
             <button
-              onClick={() => onNavigate?.("catalog", "Weekend Special")}
+              onClick={() => navigate("/catalog/Weekend%20Special")}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-black py-3 text-xs font-extrabold text-white shadow-lg transition-all hover:bg-gray-900 hover:shadow-xl active:scale-95 cursor-pointer"
             >
               <span>SHOP NOW</span>
@@ -574,7 +576,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
                 transition={{ duration: 0.4, delay: idx * 0.08 }}
                 whileHover={{ scale: 1.03 }}
                 className={`flex flex-col justify-between rounded-2xl ${cat.bg} p-3.5 border shadow-sm transition-shadow hover:shadow-md cursor-pointer`}
-                onClick={() => onNavigate?.("catalog", cat.catName)}
+                onClick={() => navigate(`/catalog/${encodeURIComponent(cat.catName)}`)}
               >
                 <div>
                   <span className="inline-block rounded-md bg-white/80 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-tight text-gray-800 shadow-2xs">
@@ -598,7 +600,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onNavigate?.("catalog", cat.catName);
+                    navigate(`/catalog/${encodeURIComponent(cat.catName)}`);
                   }}
                   className={`mt-1 flex w-full items-center justify-center gap-1 rounded-lg ${cat.btn} py-1.5 text-[11px] font-bold text-white shadow-xs transition-colors cursor-pointer`}
                 >
@@ -685,7 +687,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
               >
                 {/* Product Image */}
                 <div
-                  onClick={() => onNavigate?.("product", product.id)}
+                  onClick={() => navigate(`/product/${product.id}`)}
                   className="relative flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-t-2xl border-b border-gray-100"
                 >
                   {!product.image && (
@@ -718,7 +720,7 @@ export default function DealsPage({ onNavigate, onAddToCart }) {
                       {product.category}
                     </span>
                     <h4
-                      onClick={() => onNavigate?.("product", product.id)}
+                      onClick={() => navigate(`/product/${product.id}`)}
                       className="line-clamp-2 text-xs font-bold text-brand-ink transition-colors hover:text-[#E31E24] cursor-pointer"
                     >
                       {product.title || product.name}

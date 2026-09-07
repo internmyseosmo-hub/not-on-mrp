@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 export default function About() {
   const [headline, setHeadline] = useState('About Us');
   const [subheadline, setSubheadline] = useState('Know more about Not On MRP');

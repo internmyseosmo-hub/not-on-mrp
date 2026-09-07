@@ -5,8 +5,9 @@ import {
   Mail,
   Send,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function Footer({ onNavigate }) {
+export default function Footer() {
   return (
     <footer className="bg-[#FBE5A1] pb-20 md:pb-12 text-brand-ink">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
@@ -15,13 +16,13 @@ export default function Footer({ onNavigate }) {
         <div className="grid grid-cols-1 gap-10 py-10 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand Info */}
           <div className="space-y-4 lg:col-span-2">
-            <button onClick={() => onNavigate?.("home")} className="flex items-center text-left">
+            <Link to="/" className="flex items-center text-left">
               <img
                 src="/new.jpeg"
                 alt="NOT ON MRP Logo"
                 className="h-20 w-auto max-w-[250px] object-contain transition-transform hover:scale-105 sm:h-24 md:h-28"
               />
-            </button>
+            </Link>
             <p className="max-w-sm text-xs leading-relaxed text-brand-ink/80 sm:text-sm">
               Your one-stop destination for high-quality everyday essentials, kitchenware,
               stationery, and lifestyle items — always priced below MRP.
@@ -45,38 +46,38 @@ export default function Footer({ onNavigate }) {
             </h3>
             <ul className="mt-4 space-y-2 text-xs font-medium text-brand-ink/80">
               <li>
-                <button
-                  onClick={() => onNavigate?.("about")}
+                <Link
+                  to="/about"
                   className="cursor-pointer transition-colors hover:text-brand-red"
                 >
                   About Us
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("contact")}
+                <Link
+                  to="/contact"
                   className="cursor-pointer transition-colors hover:text-brand-red font-semibold text-brand-red"
                 >
                   Contact Us
-                </button>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-brand-red">
+                <Link to="/contact" className="transition-colors hover:text-brand-red">
                   Store Locator
-                </a>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("deals")}
+                <Link
+                  to="/deals"
                   className="transition-colors hover:text-brand-red cursor-pointer text-left"
                 >
                   Exclusive Offers
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => onNavigate?.("franchise")} className="text-gray-400 hover:text-brand-yellow transition-colors cursor-pointer">
+                <Link to="/franchise" className="text-gray-600 hover:text-brand-red transition-colors cursor-pointer">
                   Franchise Enquiries
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -88,60 +89,60 @@ export default function Footer({ onNavigate }) {
             </h3>
             <ul className="mt-4 space-y-2 text-xs font-medium text-brand-ink/80">
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Home & Living")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Home%20%26%20Living"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Home & Living
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Kitchen & Dining")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Kitchen%20%26%20Dining"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Kitchen & Dining
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Cleaning Essentials")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Cleaning%20Essentials"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Cleaning Essentials
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Stationery & Office")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Stationery%20%26%20Office"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Stationery & Office
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Personal Care")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Personal%20Care"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Personal Care
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Toys & Games")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Toys%20%26%20Games"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Toys & Games
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigate?.("catalog", "Electricals")}
-                  className="cursor-pointer transition-colors hover:text-brand-red text-left"
+                <Link
+                  to="/catalog/Electricals"
+                  className="cursor-pointer transition-colors hover:text-brand-red block"
                 >
                   Electricals & Hardware
-                </button>
+                </Link>
               </li>
             </ul>
           </div>

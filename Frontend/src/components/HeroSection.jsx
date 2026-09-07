@@ -18,6 +18,7 @@ import floatHeadphones from "../assets/float_headphones.png";
 import floatCardboardBox from "../assets/float_cardboard_box.png";
 import floatShoppingBasket from "../assets/float_shopping_basket.png";
 import floatBlueMug from "../assets/float_blue_mug.png";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
   {
@@ -73,7 +74,8 @@ const bottomBarItems = [
 
 const AUTO_SLIDE_MS = 3500;
 
-export default function HeroSection({ onNavigate }) {
+export default function HeroSection() {
+  const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const touchStartX = useRef(0);
@@ -258,7 +260,7 @@ export default function HeroSection({ onNavigate }) {
               {/* CTA Button: Dark Pill with Yellow Arrow Icon */}
               <div className="mt-6 sm:mt-8">
                 <motion.button
-                  onClick={() => onNavigate?.("catalog")}
+                  onClick={() => navigate("/catalog")}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex items-center gap-2.5 rounded-full bg-[#121820] px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-lg transition-colors hover:bg-black sm:px-7 sm:py-3 sm:text-sm cursor-pointer"

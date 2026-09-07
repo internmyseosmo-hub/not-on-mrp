@@ -16,6 +16,7 @@ import {
   Sprout,
   LayoutGrid,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 const container = {
@@ -30,13 +31,14 @@ const item = {
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: "easeOut" } },
 };
 
-export default function CategoryGrid({ onNavigate }) {
+export default function CategoryGrid() {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [apiCategories, setApiCategories] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/api/categories/all")
+    fetch("/api/categories/all")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
@@ -69,7 +71,7 @@ export default function CategoryGrid({ onNavigate }) {
     if (isViewAll) {
       setIsModalOpen(true);
     } else {
-      onNavigate?.("catalog", categoryName);
+      navigate(`/catalog/${encodeURIComponent(categoryName)}`);
     }
   };
 
@@ -180,7 +182,7 @@ export default function CategoryGrid({ onNavigate }) {
                       key={name}
                       onClick={() => {
                         setIsModalOpen(false);
-                        onNavigate?.("catalog", name);
+                        navigate(`/catalog/${encodeURIComponent(name)}`);
                       }}
                       className={`group cursor-pointer rounded-2xl border p-5 transition-all duration-300 hover:shadow-md ${color}`}
                     >

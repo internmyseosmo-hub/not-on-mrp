@@ -13,29 +13,20 @@ import {
   ArrowLeft,
   CheckCircle2,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function CartPage({ onNavigate, cartCount = 0 }) {
-  const [cartItems, setCartItems] = useState([]);
+export default function CartPage({ cartItems = [], onUpdateQuantity, onRemoveItem }) {
+  const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
   const updateQuantity = (id, delta) => {
-    setCartItems((prev) =>
-      prev
-        .map((item) => {
-          if (item.id === id) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
-          }
-          return item;
-        })
-        .filter(Boolean)
-    );
+    onUpdateQuantity?.(id, delta);
   };
 
   const removeItem = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    onRemoveItem?.(id);
   };
 
   const subtotal = cartItems.reduce(
@@ -61,7 +52,7 @@ export default function CartPage({ onNavigate, cartCount = 0 }) {
   };
 
   const handleCheckout = () => {
-    onNavigate?.("checkout");
+    navigate("/checkout");
   };
 
   return (
@@ -70,7 +61,7 @@ export default function CartPage({ onNavigate, cartCount = 0 }) {
         {/* Breadcrumb Navigation */}
         <div className="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-500">
           <button
-            onClick={() => onNavigate?.("home")}
+            onClick={() => navigate("/")}
             className="hover:text-brand-red flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft size={14} /> Home
@@ -126,7 +117,7 @@ export default function CartPage({ onNavigate, cartCount = 0 }) {
               Looks like you haven't added any products to your cart yet. Explore our bestsellers guaranteed below MRP!
             </p>
             <button
-              onClick={() => onNavigate?.("catalog")}
+              onClick={() => navigate("/catalog")}
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-black px-8 py-3.5 text-xs font-black uppercase text-white shadow-lg transition-all hover:bg-gray-900 active:scale-95 cursor-pointer"
             >
               <span>EXPLORE PRODUCTS NOW</span>

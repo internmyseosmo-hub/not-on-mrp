@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, User, Phone, ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginPage({ onNavigate, onLogin }) {
+export default function LoginPage({ onLogin }) {
+  const navigate = useNavigate();
   const [tab, setTab] = useState("login"); // "login" | "signup"
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,7 +51,7 @@ export default function LoginPage({ onNavigate, onLogin }) {
         avatar: (data.data.fullName || data.data.email)[0].toUpperCase(),
         _id: data.data._id
       });
-      onNavigate?.("account");
+      navigate("/account");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -83,19 +85,10 @@ export default function LoginPage({ onNavigate, onLogin }) {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Save token
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      onLogin?.({
-        name: data.data.fullName,
-        email: data.data.email,
-        phone: data.data.mobile || "",
-        avatar: data.data.fullName[0].toUpperCase(),
-        _id: data.data._id
-      });
-      onNavigate?.("account");
+      alert("Account created successfully! Please sign in to continue.");
+      setLoginForm((prev) => ({ ...prev, email: signupForm.email }));
+      setTab("login");
+      setSignupForm({ name: "", phone: "", email: "", password: "", confirm: "" });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -109,7 +102,7 @@ export default function LoginPage({ onNavigate, onLogin }) {
 
         {/* Back */}
         <button
-          onClick={() => onNavigate?.("home")}
+          onClick={() => navigate("/")}
           className="mb-6 flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-brand-red cursor-pointer transition-colors"
         >
           <ArrowLeft size={14} /> Back to Home

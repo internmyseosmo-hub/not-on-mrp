@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { Image as ImageIcon, GripVertical, Plus, ChevronDown } from 'lucide-react';
 
-const AdminHome = ({ onNavigate }) => {
+const AdminHome = () => {
   // Form states
   const [badgeText, setBadgeText] = useState('EVERY');
   const [badgeColor, setBadgeColor] = useState('#FF1E1E');
@@ -22,7 +22,7 @@ const AdminHome = ({ onNavigate }) => {
   ];
 
   return (
-    <AdminLayout onNavigate={onNavigate} activePage="home">
+    <AdminLayout activePage="home">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

@@ -17,12 +17,13 @@ import {
   ChevronRight,
   Package,
 } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function ProductDetailPage({
-  productId,
-  onNavigate,
   onAddToCart,
 }) {
+  const { id: productId } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [apiProducts, setApiProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
@@ -35,7 +36,7 @@ export default function ProductDetailPage({
 
   useEffect(() => {
     // 1. Fetch all products to populate related products & resolve API product
-    fetch("http://127.0.0.1:3000/api/products?limit=100")
+    fetch("/api/products?limit=100")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
@@ -50,7 +51,7 @@ export default function ProductDetailPage({
 
     // 2. Directly fetch this specific product
     if (productId) {
-      fetch(`http://127.0.0.1:3000/api/products/${productId}`)
+      fetch(`/api/products/${productId}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.data) {
@@ -168,7 +169,7 @@ export default function ProductDetailPage({
                   onClick={() => {
                     alert("Order placed successfully! Thank you for shopping with Not On MRP.");
                     setBuyNowModal(false);
-                    onNavigate?.("home");
+                    navigate("/");
                   }}
                   className="flex-1 rounded-full bg-brand-yellow py-3 text-xs font-extrabold text-brand-ink hover:bg-amber-400 transition-transform active:scale-95 shadow-md"
                 >
@@ -185,14 +186,14 @@ export default function ProductDetailPage({
         <div className="mb-6 flex items-center justify-between">
           <nav className="flex items-center gap-1.5 text-xs text-gray-500 sm:text-sm">
             <button
-              onClick={() => onNavigate?.("home")}
+              onClick={() => navigate("/")}
               className="font-medium hover:text-brand-ink transition-colors"
             >
               Home
             </button>
             <ChevronRight size={14} className="text-gray-400" />
             <button
-              onClick={() => onNavigate?.("catalog")}
+              onClick={() => navigate("/catalog")}
               className="font-medium hover:text-brand-ink transition-colors"
             >
               Products
@@ -204,7 +205,7 @@ export default function ProductDetailPage({
           </nav>
 
           <button
-            onClick={() => onNavigate?.("catalog")}
+            onClick={() => navigate("/catalog")}
             className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-brand-ink shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <ArrowLeft size={14} /> Back to Catalog
@@ -294,20 +295,7 @@ export default function ProductDetailPage({
                 {product.tagline || "High quality daily essential priced lower than MRP."}
               </p>
 
-              {/* Rating & Reviews Bar */}
-              <div className="mt-3 flex items-center gap-3">
-                <div className="flex items-center gap-1.5 rounded-xl bg-amber-400/20 px-2.5 py-1 text-xs font-bold text-amber-900">
-                  <Star size={14} className="fill-amber-500 text-amber-500" />
-                  <span>{product.rating}</span>
-                </div>
-                <span className="text-xs text-gray-400">|</span>
-                <button
-                  onClick={() => setActiveTab("reviews")}
-                  className="text-xs font-semibold text-gray-600 hover:text-brand-ink underline underline-offset-4"
-                >
-                  {product.reviewsCount || 120} Verified Ratings & Reviews
-                </button>
-              </div>
+
 
               <div className="mt-5 border-t border-gray-100 pt-5" />
 
@@ -461,16 +449,7 @@ export default function ProductDetailPage({
             >
               Specifications
             </button>
-            <button
-              onClick={() => setActiveTab("reviews")}
-              className={`pb-4 px-4 text-xs font-bold sm:text-sm transition-all border-b-2 ${
-                activeTab === "reviews"
-                  ? "border-brand-red text-brand-red"
-                  : "border-transparent text-gray-500 hover:text-gray-900"
-              }`}
-            >
-              Customer Reviews ({product.reviewsCount || 120})
-            </button>
+
           </div>
 
           {/* Tab Content Panels */}
@@ -578,63 +557,7 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {activeTab === "reviews" && (
-              <div>
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-                  <div className="flex items-center gap-4 rounded-2xl bg-amber-50 p-5 border border-amber-100">
-                    <div className="text-center">
-                      <span className="font-display text-4xl font-black text-brand-ink">
-                        {product.rating ?? 4.5}
-                      </span>
-                      <div className="mt-1 flex justify-center text-amber-500">
-                        {"★".repeat(Math.max(Math.floor(product.rating ?? 4.5), 1))}
-                      </div>
-                      <p className="mt-1 text-[10px] font-bold text-gray-500 uppercase">
-                        Overall Rating
-                      </p>
-                    </div>
-                    <div className="border-l border-amber-200/80 pl-4 text-xs text-gray-600">
-                      <p className="font-bold text-brand-ink">100% Verified Buyers</p>
-                      <p className="mt-0.5">Based on {product.reviewsCount || 120} customer ratings.</p>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Review Cards */}
-                <div className="mt-6 space-y-4">
-                  {product.reviews && product.reviews.length > 0 ? (
-                    product.reviews.map((rev) => (
-                      <div
-                        key={rev.id}
-                        className="rounded-2xl bg-gray-50 p-4 border border-gray-100"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-ink text-xs font-bold text-white">
-                              {rev.author[0]}
-                            </span>
-                            <div>
-                              <p className="text-xs font-bold text-brand-ink">{rev.author}</p>
-                              <div className="flex text-amber-500 text-[10px]">
-                                {"★".repeat(rev.rating)}
-                              </div>
-                            </div>
-                          </div>
-                          <span className="text-[10px] text-gray-400 font-medium">{rev.date}</span>
-                        </div>
-                        <p className="mt-2 text-xs text-gray-700 leading-relaxed font-medium">
-                          "{rev.comment}"
-                        </p>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="rounded-2xl bg-gray-50 p-6 border border-gray-100 text-center text-xs text-gray-500">
-                      Be the first verified customer to review this product!
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -650,7 +573,7 @@ export default function ProductDetailPage({
               </p>
             </div>
             <button
-              onClick={() => onNavigate?.("catalog")}
+              onClick={() => navigate("/catalog")}
               className="text-xs font-bold text-brand-red hover:underline"
             >
               View All Products &rarr;
@@ -663,7 +586,7 @@ export default function ProductDetailPage({
               return (
                 <div
                   key={rel.id}
-                  onClick={() => onNavigate?.("product", rel.id)}
+                  onClick={() => navigate(`/product/${rel.id}`)}
                   className="group cursor-pointer overflow-hidden rounded-2xl bg-white p-3 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-md border border-gray-100"
                 >
                   <div

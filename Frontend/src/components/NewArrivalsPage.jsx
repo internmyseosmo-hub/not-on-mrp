@@ -9,13 +9,27 @@ import {
   ArrowLeft,
   Package,
 } from "lucide-react";
-export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
+import { useNavigate } from "react-router-dom";
+export default function NewArrivalsPage({ onAddToCart }) {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
   const [apiProducts, setApiProducts] = useState([]);
+  const [quantities, setQuantities] = useState({});
+
+  const handleQtyChange = (product, delta) => {
+    setQuantities((prev) => {
+      const current = prev[product.id] || 0;
+      const next = Math.max(0, current + delta);
+      if (next !== current) {
+        onAddToCart?.(product, next - current);
+      }
+      return { ...prev, [product.id]: next };
+    });
+  };
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/api/products")
+    fetch("/api/products")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
@@ -53,7 +67,7 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
             <button
-              onClick={() => onNavigate?.("home")}
+              onClick={() => navigate("/")}
               className="hover:text-brand-ink transition-colors"
             >
               Home
@@ -63,7 +77,7 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
           </div>
 
           <button
-            onClick={() => onNavigate?.("home")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-brand-ink shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
           >
             <ArrowLeft size={14} /> Back to Home
@@ -142,7 +156,7 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
                 <div>
                   {/* Image/Art Box */}
                   <div
-                    onClick={() => onNavigate?.("product", product.id)}
+                    onClick={() => navigate(`/product/${product.id}`)}
                     className="relative cursor-pointer flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br transition-transform duration-300"
                   >
                     {!product.image && (
@@ -171,7 +185,7 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
                       {product.category || "Essentials"}
                     </span>
                     <h3
-                      onClick={() => onNavigate?.("product", product.id)}
+                      onClick={() => navigate(`/product/${product.id}`)}
                       className="mt-1.5 line-clamp-2 cursor-pointer font-semibold text-xs text-brand-ink hover:text-brand-red transition-colors sm:text-sm"
                     >
                       {product.name}
@@ -197,20 +211,24 @@ export default function NewArrivalsPage({ onNavigate, onAddToCart }) {
                 </div>
 
                 {/* Bottom Actions */}
-                <div className="mt-3 pt-2 border-t border-gray-100 flex gap-2">
-                  <button
-                    onClick={() => onNavigate?.("product", product.id)}
-                    className="flex-1 rounded-full bg-gray-100 py-2 text-[11px] font-bold text-brand-ink hover:bg-gray-200 transition-colors"
-                  >
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => onAddToCart?.(product, 1)}
-                    className="flex items-center justify-center rounded-full bg-brand-ink px-3 py-2 text-white hover:bg-gray-800 transition-colors"
-                    title="Add to Cart"
-                  >
-                    <ShoppingCart size={14} />
-                  </button>
+                <div className="mt-3 pt-2 border-t border-gray-100 flex justify-end">
+                  <div className="flex h-8 items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-1 w-20 shrink-0">
+                    <button
+                      onClick={() => handleQtyChange(product, -1)}
+                      className="flex h-6 w-6 items-center justify-center rounded-full font-bold text-gray-700 hover:bg-white"
+                    >
+                      -
+                    </button>
+                    <span className="font-display font-bold text-brand-ink text-[11px]">
+                      {quantities[product.id] || 0}
+                    </span>
+                    <button
+                      onClick={() => handleQtyChange(product, 1)}
+                      className="flex h-6 w-6 items-center justify-center rounded-full font-bold text-gray-700 hover:bg-white"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             );

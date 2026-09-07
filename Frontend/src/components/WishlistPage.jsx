@@ -8,8 +8,10 @@ import {
   ArrowLeft,
   Sparkles,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function WishlistPage({ onNavigate, onAddToCart }) {
+export default function WishlistPage({ onAddToCart }) {
+  const navigate = useNavigate();
   const [wishlistItems, setWishlistItems] = useState([]);
 
   const removeFromWishlist = (id) => {
@@ -27,7 +29,7 @@ export default function WishlistPage({ onNavigate, onAddToCart }) {
         {/* Breadcrumb Navigation */}
         <div className="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-500">
           <button
-            onClick={() => onNavigate?.("home")}
+            onClick={() => navigate("/")}
             className="hover:text-brand-red flex items-center gap-1 cursor-pointer"
           >
             <ArrowLeft size={14} /> Home
@@ -61,7 +63,7 @@ export default function WishlistPage({ onNavigate, onAddToCart }) {
               Save your favorite items here to track discounts below MRP and buy them whenever you're ready.
             </p>
             <button
-              onClick={() => onNavigate?.("catalog")}
+              onClick={() => navigate("/catalog")}
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-black px-8 py-3.5 text-xs font-black uppercase text-white shadow-lg transition-all hover:bg-gray-900 active:scale-95 cursor-pointer"
             >
               <span>EXPLORE CATALOG NOW</span>
@@ -94,7 +96,7 @@ export default function WishlistPage({ onNavigate, onAddToCart }) {
 
                 {/* Product Image */}
                 <div
-                  onClick={() => onNavigate?.("product", product.id)}
+                  onClick={() => navigate(`/product/${product.id}`)}
                   className="relative flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl mt-4"
                 >
                   {!product.image && (
@@ -121,7 +123,7 @@ export default function WishlistPage({ onNavigate, onAddToCart }) {
                     {product.category}
                   </span>
                   <h3
-                    onClick={() => onNavigate?.("product", product.id)}
+                    onClick={() => navigate(`/product/${product.id}`)}
                     className="font-display text-sm font-bold text-brand-ink line-clamp-1 hover:text-brand-red cursor-pointer mt-0.5"
                   >
                     {product.name}

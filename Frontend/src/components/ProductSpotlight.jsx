@@ -22,6 +22,7 @@ import {
   Sparkles,
   Utensils,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const spotlightProducts = [
   {
@@ -134,7 +135,8 @@ const spotlightProducts = [
   },
 ];
 
-export default function ProductSpotlight({ onNavigate }) {
+export default function ProductSpotlight() {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -288,7 +290,7 @@ export default function ProductSpotlight({ onNavigate }) {
                   </div>
 
                   <motion.button
-                    onClick={() => onNavigate?.("catalog")}
+                    onClick={() => navigate("/catalog")}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.96 }}
                     className="inline-flex cursor-pointer items-center gap-3 rounded-full bg-[#121820] px-6 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg transition-colors hover:bg-black sm:px-7 sm:py-3.5 sm:text-sm"

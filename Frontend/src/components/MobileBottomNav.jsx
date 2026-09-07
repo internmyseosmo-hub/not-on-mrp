@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Home, Search, Grid, Heart, ShoppingCart } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function MobileBottomNav({
   cartCount = 0,
@@ -9,13 +10,13 @@ export default function MobileBottomNav({
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 px-3 py-2 backdrop-blur-md md:hidden">
       <div className="flex items-center justify-around">
-        <a
-          href="#"
+        <Link
+          to="/"
           className="flex flex-col items-center gap-1 text-brand-ink transition-colors hover:text-brand-red active:scale-95"
         >
           <Home size={20} />
           <span className="text-[10px] font-bold">Home</span>
-        </a>
+        </Link>
 
         <button
           onClick={onToggleSearch}
@@ -33,16 +34,16 @@ export default function MobileBottomNav({
           <span className="text-[10px] font-bold">Categories</span>
         </button>
 
-        <a
-          href="#"
+        <Link
+          to="/wishlist"
           className="flex flex-col items-center gap-1 text-brand-ink/70 transition-colors hover:text-brand-red active:scale-95"
         >
           <Heart size={20} />
           <span className="text-[10px] font-bold">Wishlist</span>
-        </a>
+        </Link>
 
-        <a
-          href="#"
+        <Link
+          to="/cart"
           className="relative flex flex-col items-center gap-1 text-brand-ink/70 transition-colors hover:text-brand-red active:scale-95"
         >
           <div className="relative">
@@ -58,7 +59,7 @@ export default function MobileBottomNav({
             )}
           </div>
           <span className="text-[10px] font-bold">Cart</span>
-        </a>
+        </Link>
       </div>
     </div>
   );

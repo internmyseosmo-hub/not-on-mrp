@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { Tag, Plus, Edit2, Trash2, Search, Filter } from 'lucide-react';
 
-const DealsAndOffers = ({ onNavigate }) => {
+const DealsAndOffers = () => {
   const [deals, setDeals] = useState([
     { id: 1, title: 'Summer Clearance Sale', discount: '50% OFF', code: 'SUMMER50', status: 'Active', validUntil: '2025-08-31' },
     { id: 2, title: 'First Order Discount', discount: 'Flat ₹500', code: 'WELCOME500', status: 'Active', validUntil: 'Never' },
@@ -10,7 +10,7 @@ const DealsAndOffers = ({ onNavigate }) => {
   ]);
 
   return (
-    <AdminLayout onNavigate={onNavigate} activePage="deals">
+    <AdminLayout activePage="deals">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>

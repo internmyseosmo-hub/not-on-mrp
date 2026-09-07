@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -13,6 +13,7 @@ import {
   Mail,
   Lock,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const PAYMENT_METHODS = [
   { id: "upi", label: "UPI / QR Code", icon: Smartphone, desc: "PhonePe, Google Pay, Paytm, BHIM" },
@@ -22,26 +23,53 @@ const PAYMENT_METHODS = [
 
 const STEPS = ["Delivery Address", "Payment", "Review & Place Order"];
 
-export default function CheckoutPage({ onNavigate, cartItems = [], finalTotal = 0, totalSavings = 0 }) {
+export default function CheckoutPage({ cartItems = [], finalTotal = 0, totalSavings = 0, onClearCart }) {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId] = useState("NOM-" + Math.floor(100000 + Math.random() * 900000));
 
-  const items = cartItems.length > 0 ? cartItems : [
-    { id: 1, name: "Stackable Storage Crates (Set of 4)", price: 599, quantity: 1, category: "Home & Living" },
-    { id: 2, name: "Desk Pen & Pencil Organizer", price: 249, quantity: 2, category: "Stationery & Office" },
-  ];
+  const items = cartItems;
   const total = finalTotal || items.reduce((s, i) => s + i.price * i.quantity, 0);
   const savings = totalSavings || Math.round(total * 0.22);
 
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", city: "", pincode: "", state: "" });
   const handleForm = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  const isAddressValid = form.name && form.phone.length >= 10 && form.address && form.city && form.pincode.length === 6;
+  const isAddressValid = form.name.trim() !== "" && form.phone.trim() !== "" && form.address.trim() !== "" && form.city.trim() !== "" && form.pincode.trim() !== "";
 
-  const handlePlaceOrder = () => {
-    setOrderPlaced(true);
-    setTimeout(() => onNavigate?.("home"), 5000);
+  const handlePlaceOrder = async () => {
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId,
+          customerInfo: form,
+          orderItems: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            category: item.category
+          })),
+          paymentMethod,
+          totalAmount: total,
+          totalSavings: savings
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to place order");
+      }
+
+      setOrderPlaced(true);
+      if (onClearCart) onClearCart();
+      setTimeout(() => navigate("/"), 5000);
+    } catch (error) {
+      console.error(error);
+      alert("Error placing order. Please try again.");
+    }
   };
 
   if (orderPlaced) {
@@ -92,7 +120,7 @@ export default function CheckoutPage({ onNavigate, cartItems = [], finalTotal = 
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
 
         <div className="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-500">
-          <button onClick={() => onNavigate?.("cart")} className="hover:text-brand-red flex items-center gap-1 cursor-pointer">
+          <button onClick={() => navigate("/cart")} className="hover:text-brand-red flex items-center gap-1 cursor-pointer">
             <ArrowLeft size={14} /> Back to Cart
           </button>
           <span>/</span>

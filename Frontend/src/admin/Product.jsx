@@ -34,7 +34,7 @@ export default function Product() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:3000/api/categories/all');
+      const res = await fetch('/api/categories/all');
       const data = await res.json();
       if (data.success) {
         setCategories(data.data);
@@ -47,7 +47,7 @@ export default function Product() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:3000/api/products');
+      const res = await fetch('/api/products');
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);
@@ -71,7 +71,7 @@ export default function Product() {
       formData.append('isActive', true);
       formData.append('sortOrder', 0);
 
-      const res = await fetch('http://127.0.0.1:3000/api/categories', {
+      const res = await fetch('/api/categories', {
         method: 'POST',
         body: formData,
       });
@@ -124,8 +124,8 @@ export default function Product() {
       }
 
       const url = editingProductId 
-        ? `http://127.0.0.1:3000/api/products/${editingProductId}` 
-        : 'http://127.0.0.1:3000/api/products';
+        ? `/api/products/${editingProductId}` 
+        : '/api/products';
       const method = editingProductId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -181,7 +181,7 @@ export default function Product() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
       setLoading(true);
-      const res = await fetch(`http://127.0.0.1:3000/api/products/${id}`, {
+      const res = await fetch(`/api/products/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, CheckCircle2, Building2, User, Mail, Phone, MapPin, Target, Wallet, Store, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function FranchiseApplicationPage({ onNavigate }) {
+export default function FranchiseApplicationPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -49,7 +51,7 @@ export default function FranchiseApplicationPage({ onNavigate }) {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://127.0.0.1:3000/api/franchise', {
+      const response = await fetch('/api/franchise', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +95,7 @@ export default function FranchiseApplicationPage({ onNavigate }) {
         
         {/* Back Button */}
         <button 
-          onClick={() => onNavigate?.('franchise')}
+          onClick={() => navigate('/franchise')}
           className="flex items-center gap-2 text-gray-500 hover:text-brand-ink font-semibold mb-8 transition-colors group"
         >
           <div className="bg-white p-1.5 rounded-full shadow-sm group-hover:shadow border border-gray-100 transition-all">
@@ -311,7 +313,7 @@ export default function FranchiseApplicationPage({ onNavigate }) {
                 </p>
 
                 <button 
-                  onClick={() => onNavigate?.('home')}
+                  onClick={() => navigate('/')}
                   className="bg-brand-yellow text-brand-ink font-bold px-8 py-4 rounded-xl shadow-sm hover:shadow-md hover:bg-brand-yellow-dark transition-all"
                 >
                   Return to Home

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Zap, ChevronRight, Copy } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import dealsStorageCrates from "../assets/deals_storage_crates.png";
 import dealsAlarmClock from "../assets/deals_alarm_clock.png";
 import dealsShoppingBag from "../assets/deals_shopping_bag.png";
 
-export default function HomeDeals({ onNavigate }) {
+export default function HomeDeals() {
+  const navigate = useNavigate();
   // Live Flash Sale Timer
   const [timeLeft, setTimeLeft] = useState({
     hours: 2,
@@ -81,7 +83,7 @@ export default function HomeDeals({ onNavigate }) {
         {/* Right Side: View More Button */}
         <div className="relative">
           <button
-            onClick={() => onNavigate?.("deals")}
+            onClick={() => navigate("/deals")}
             className="group flex items-center gap-3 bg-black text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-md hover:bg-gray-900 transition-colors active:scale-95 cursor-pointer"
           >
             <span>View More Deals</span>
@@ -100,7 +102,7 @@ export default function HomeDeals({ onNavigate }) {
         <motion.div
           whileHover={{ y: -5 }}
           className="relative bg-[#FFF9E6] rounded-[24px] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-sm border border-amber-100 cursor-pointer"
-          onClick={() => onNavigate?.("deals")}
+          onClick={() => navigate("/deals")}
         >
           {/* Top badges */}
           <div className="flex items-start justify-between z-10 relative">
@@ -158,7 +160,7 @@ export default function HomeDeals({ onNavigate }) {
         <motion.div
           whileHover={{ y: -5 }}
           className="relative bg-[#FFF0F0] rounded-[24px] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-sm border border-red-100 cursor-pointer"
-          onClick={() => onNavigate?.("deals")}
+          onClick={() => navigate("/deals")}
         >
           {/* Background Lightning bolt decoration */}
           <div className="absolute top-4 right-6 text-red-200/50 pointer-events-none">
@@ -228,7 +230,7 @@ export default function HomeDeals({ onNavigate }) {
         <motion.div
           whileHover={{ y: -5 }}
           className="relative bg-[#EAF6ED] rounded-[24px] p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-sm border border-green-100 cursor-pointer"
-          onClick={() => onNavigate?.("deals")}
+          onClick={() => navigate("/deals")}
         >
           <div className="flex items-start z-10 relative">
             <motion.span

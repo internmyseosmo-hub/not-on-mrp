@@ -15,7 +15,7 @@ export default function User() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://127.0.0.1:3000/api/users", {
+      const res = await fetch("/api/users", {
         headers: {
           // If the route becomes protected in the future, token will be sent
           ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -36,7 +36,7 @@ export default function User() {
     
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await fetch(`http://127.0.0.1:3000/api/users/${id}`, {
+      const res = await fetch(`/api/users/${id}`, {
         method: 'DELETE',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {})

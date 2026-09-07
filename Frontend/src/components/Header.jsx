@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, MapPin, Truck, Heart, ShoppingCart, Menu, User, LogOut, Settings } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 
 const utilityIcons = [
   { label: "Store Locator", icon: MapPin },
@@ -13,8 +14,6 @@ export default function Header({
   onOpenDrawer,
   isSearchOpen,
   setIsSearchOpen,
-  onNavigateToHome,
-  onNavigate,
   isLoggedIn = false,
   currentUser = null,
   onLogout,
@@ -23,6 +22,7 @@ export default function Header({
   const [searchTerm, setSearchTerm] = useState("");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -46,24 +46,22 @@ export default function Header({
 
   const handleSearchSubmit = (e) => {
     e?.preventDefault();
-    const nav = onNavigate || onNavigateToHome;
     if (searchTerm.trim()) {
-      nav?.("catalog", searchTerm.trim());
+      navigate(`/catalog/${encodeURIComponent(searchTerm.trim())}`);
       if (setIsSearchOpen) setIsSearchOpen(false);
       setInternalSearchOpen(false);
     } else {
-      nav?.("catalog", "All");
+      navigate("/catalog/All");
     }
   };
 
   const handleUtilityClick = (label) => {
-    const nav = onNavigate || onNavigateToHome;
     if (label === "Store Locator") {
-      nav?.("contact");
+      navigate("/contact");
     } else if (label === "Track Order") {
-      nav?.("track-order");
+      navigate("/track-order");
     } else if (label === "Wishlist") {
-      nav?.("wishlist");
+      navigate("/wishlist");
     }
   };
 
@@ -80,13 +78,13 @@ export default function Header({
         </button>
 
         {/* Logo */}
-        <button onClick={() => onNavigateToHome?.("home")} className="flex shrink-0 items-center cursor-pointer">
+        <Link to="/" className="flex shrink-0 items-center cursor-pointer">
           <img
             src="/new.jpeg"
             alt="NOT ON MRP - Everyday Essentials, Always Low Prices!"
             className="h-10 w-auto max-w-[120px] object-contain transition-transform hover:scale-105 xs:h-12 sm:h-14 md:h-16 md:max-w-[160px] lg:h-20"
           />
-        </button>
+        </Link>
 
         {/* Desktop Search bar */}
         <form onSubmit={handleSearchSubmit} className="relative hidden flex-1 max-w-xl lg:max-w-2xl md:flex items-center">
@@ -135,7 +133,7 @@ export default function Header({
           ))}
 
           <motion.button
-            onClick={() => (onNavigate || onNavigateToHome)?.("cart")}
+            onClick={() => navigate("/cart")}
             whileHover={{ y: -3 }}
             className="group relative flex flex-col items-center gap-1 text-brand-ink/80 transition-colors hover:text-brand-red cursor-pointer"
           >
@@ -183,13 +181,13 @@ export default function Header({
                       <p className="text-[10px] text-gray-500 font-medium truncate">{currentUser.email}</p>
                     </div>
                     <button
-                      onClick={() => { setUserMenuOpen(false); (onNavigate || onNavigateToHome)?.("account"); }}
+                      onClick={() => { setUserMenuOpen(false); navigate("/account"); }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-brand-ink hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                       <Settings size={14} className="text-gray-500" /> My Account
                     </button>
                     <button
-                      onClick={() => { setUserMenuOpen(false); onLogout?.(); (onNavigate || onNavigateToHome)?.("home"); }}
+                      onClick={() => { setUserMenuOpen(false); onLogout?.(); navigate("/"); }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer border-t border-gray-100"
                     >
                       <LogOut size={14} /> Sign Out
@@ -200,7 +198,7 @@ export default function Header({
             </div>
           ) : (
             <motion.button
-              onClick={() => (onNavigate || onNavigateToHome)?.("login")}
+              onClick={() => navigate("/login")}
               whileHover={{ y: -3 }}
               className="group hidden sm:flex flex-col items-center gap-1 text-brand-ink/80 transition-colors hover:text-brand-red cursor-pointer"
             >

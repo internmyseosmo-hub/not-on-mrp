@@ -23,7 +23,7 @@ import {
 
 import shoppingCartLoop from "../assets/shopping_cart_loop.webp";
 
-export default function ContactPage({ onNavigate }) {
+export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -64,7 +64,7 @@ export default function ContactPage({ onNavigate }) {
     setErrorMessage("");
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

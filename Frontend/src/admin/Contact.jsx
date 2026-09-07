@@ -15,7 +15,7 @@ export default function Contact() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://127.0.0.1:3000/api/contact", {
+      const res = await fetch("/api/contact", {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         }
@@ -35,7 +35,7 @@ export default function Contact() {
     
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await fetch(`http://127.0.0.1:3000/api/contact/${id}`, {
+      const res = await fetch(`/api/contact/${id}`, {
         method: 'DELETE',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {})

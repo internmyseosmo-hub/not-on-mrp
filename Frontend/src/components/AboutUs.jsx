@@ -18,8 +18,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import storeInterior from "../assets/store_interior.png";
+import { useNavigate } from "react-router-dom";
 
-export default function AboutUs({ onNavigateToHome }) {
+export default function AboutUs() {
+  const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -333,7 +335,7 @@ export default function AboutUs({ onNavigateToHome }) {
 
           {/* Explore Products Button */}
           <motion.button
-            onClick={onNavigateToHome}
+            onClick={() => navigate("/")}
             whileHover={{ scale: 1.08, y: -2 }}
             whileTap={{ scale: 0.95 }}
             className="group inline-flex cursor-pointer items-center gap-3 rounded-full border-2 border-[#121820] bg-white px-8 py-3.5 text-xs font-black uppercase tracking-wider text-[#121820] shadow-xs transition-all hover:bg-[#121820] hover:text-white hover:shadow-xl sm:text-sm"

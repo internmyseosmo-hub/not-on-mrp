@@ -7,36 +7,26 @@ const reviews = [
     id: 1,
     rating: 5,
     quote: "Great products at unbeatable prices. Not On MRP is my go to store now!",
-    author: "Priya Sharma",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 2,
     rating: 5,
     quote: "Quality is top notch and delivery was super fast!",
-    author: "Rahul Verma",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 3,
     rating: 5,
     quote: "Love the variety! Everything I need under one roof.",
-    author: "Neha Singh",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 4,
     rating: 5,
     quote: "The prices are genuinely below MRP. Amazing daily discounts too!",
-    author: "Aman Gupta",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 5,
     rating: 5,
     quote: "Super fast shipping and excellent customer support team!",
-    author: "Ananya Roy",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
   },
 ];
 
@@ -134,15 +124,10 @@ export default function Testimonials() {
                 </p>
               </div>
 
-              {/* Author Info with Avatar */}
-              <div className="mt-6 flex items-center gap-3 border-t border-gray-200/60 pt-4">
-                <img
-                  src={review.avatar}
-                  alt={review.author}
-                  className="h-9 w-9 rounded-full border border-gray-200 object-cover shadow-xs sm:h-10 sm:w-10"
-                />
-                <span className="font-display text-xs font-bold text-[#121820] sm:text-sm">
-                  – {review.author}
+              {/* Verified Buyer Tag */}
+              <div className="mt-6 flex items-center gap-2 border-t border-gray-200/60 pt-4">
+                <span className="font-display text-xs font-bold text-gray-500 sm:text-sm">
+                  – Verified Customer
                 </span>
               </div>
             </motion.div>

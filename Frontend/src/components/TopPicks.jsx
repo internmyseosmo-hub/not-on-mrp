@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Star, ChevronRight, ChevronUp, ShoppingCart, Filter, Package } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const container = {
   hidden: {},
@@ -12,12 +13,13 @@ const card = {
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: "easeOut" } },
 };
 
-function ProductCard({ product, onNavigate, onAddToCart }) {
+function ProductCard({ product, onAddToCart }) {
+  const navigate = useNavigate();
   const [wished, setWished] = useState(false);
   const Icon = product.icon || Package;
 
   const handleCardClick = () => {
-    onNavigate?.("product", product.id);
+    navigate(`/product/${product.id}`);
   };
 
   return (
@@ -28,7 +30,7 @@ function ProductCard({ product, onNavigate, onAddToCart }) {
     >
       <div
         onClick={handleCardClick}
-        className={`relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br ${product.art || "from-amber-400 to-orange-500"} ${product.image ? 'p-0' : 'p-6 sm:p-8'}`}
+        className={`relative flex aspect-square items-center justify-center overflow-hidden bg-white ${product.image ? 'p-0' : 'p-6 sm:p-8'}`}
       >
         {!product.image && (
           <motion.div
@@ -107,13 +109,14 @@ function ProductCard({ product, onNavigate, onAddToCart }) {
 
 const filterOptions = ["All", "Under ₹499", "Top Rated", "Big Discounts"];
 
-export default function TopPicks({ onNavigate, onAddToCart }) {
+export default function TopPicks({ onAddToCart }) {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
   const [apiProducts, setApiProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3000/api/products?limit=20")
+    fetch("/api/products?limit=20")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
@@ -124,7 +127,7 @@ export default function TopPicks({ onNavigate, onAddToCart }) {
   }, []);
 
   const handleViewAll = () => {
-    onNavigate?.("new-arrivals");
+    navigate("/new-arrivals");
   };
 
   const allNewArrivalProducts = apiProducts;
@@ -173,7 +176,7 @@ export default function TopPicks({ onNavigate, onAddToCart }) {
         className="grid grid-cols-2 gap-3 xs:gap-4 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-6"
       >
         {displayedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} onNavigate={onNavigate} onAddToCart={onAddToCart} />
+          <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
         ))}
       </motion.div>
     </section>

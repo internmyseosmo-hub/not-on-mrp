@@ -25,6 +25,7 @@ import {
   Lightbulb
 } from "lucide-react";
 import FeaturesBar from "./FeaturesBar.jsx";
+import { useNavigate } from "react-router-dom";
 
 function AnimatedNumber({ value, prefix = "", suffix = "" }) {
   const [count, setCount] = useState(0);
@@ -47,7 +48,8 @@ function AnimatedNumber({ value, prefix = "", suffix = "" }) {
   return <span ref={ref}>{prefix}{count}{suffix}</span>;
 }
 
-export default function FranchisePage({ onNavigate }) {
+export default function FranchisePage() {
+  const navigate = useNavigate();
   return (
     <div className="bg-[#fcfbf9] min-h-screen font-body text-brand-ink selection:bg-brand-yellow selection:text-brand-ink overflow-x-hidden">
       
@@ -127,7 +129,7 @@ export default function FranchisePage({ onNavigate }) {
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate?.('apply-franchise')} 
+              onClick={() => navigate('/apply-franchise')} 
               className="bg-brand-yellow text-brand-ink font-bold px-8 py-4 rounded-full shadow-sm hover:shadow-md hover:bg-brand-yellow-dark transition-all flex items-center justify-center gap-2 whitespace-nowrap text-lg"
             >
               Apply for Franchise
@@ -530,7 +532,7 @@ export default function FranchisePage({ onNavigate }) {
             </p>
             
             <div className="z-10 relative">
-              <button onClick={() => onNavigate?.('apply-franchise')} className="bg-brand-ink text-white font-bold px-6 py-3 rounded-full hover:bg-gray-800 transition-colors flex items-center gap-2 mb-6 shadow-lg">
+              <button onClick={() => navigate('/apply-franchise')} className="bg-brand-ink text-white font-bold px-6 py-3 rounded-full hover:bg-gray-800 transition-colors flex items-center gap-2 mb-6 shadow-lg">
                 Apply for Franchise
                 <ChevronRight size={18} strokeWidth={3} />
               </button>

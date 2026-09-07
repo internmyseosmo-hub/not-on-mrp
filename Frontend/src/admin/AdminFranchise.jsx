@@ -10,7 +10,7 @@ export default function AdminFranchise() {
   const fetchEnquiries = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("http://127.0.0.1:3000/api/franchise");
+      const res = await fetch("/api/franchise");
       const data = await res.json();
       if (data.success) {
         setEnquiries(data.data);
@@ -30,7 +30,7 @@ export default function AdminFranchise() {
     if (!window.confirm("Are you sure you want to delete this enquiry?")) return;
     try {
       setIsDeleting(id);
-      const res = await fetch(`http://127.0.0.1:3000/api/franchise/${id}`, {
+      const res = await fetch(`/api/franchise/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();

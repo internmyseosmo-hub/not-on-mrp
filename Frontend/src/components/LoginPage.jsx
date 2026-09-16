@@ -117,7 +117,7 @@ export default function LoginPage({ onLogin }) {
           {/* Header Banner */}
           <div className="bg-gradient-to-br from-[#121820] to-[#2a3444] p-8 text-center">
             <img
-              src="/NOTONMRP.png"
+              src="/new.jpeg"
               alt="NOT ON MRP Logo"
               className="mx-auto mb-4 h-14 w-auto object-contain"
             />

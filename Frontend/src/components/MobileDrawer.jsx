@@ -75,7 +75,7 @@ export default function MobileDrawer({ isOpen, onClose, cartCount = 0 }) {
             <div className="flex items-center justify-between border-b border-gray-100 bg-brand-yellow px-5 py-4">
               <div className="flex items-center gap-2">
                 <img
-                  src="/NOTONMRP.png"
+                  src="/new.jpeg"
                   alt="Not On MRP"
                   className="h-10 w-auto object-contain"
                 />

@@ -30,7 +30,7 @@ const AdminLayout = ({ children, activePage = 'dashboard', onLogout }) => {
 
         {/* Logo Area */}
         <div className="h-16 flex items-center justify-center bg-[#1E1E1E]">
-          <img src="/NOTONMRP.png" alt="NOT ON MRP Logo" className="h-8 w-auto object-contain" />
+          <img src="/new.jpeg" alt="NOT ON MRP Logo" className="h-8 w-auto object-contain" />
         </div>
 
         {/* Navigation Items */}
@@ -67,8 +67,8 @@ const AdminLayout = ({ children, activePage = 'dashboard', onLogout }) => {
                               key={sub.id}
                               onClick={() => navigate(`/admin/${sub.id}`)}
                               className={`w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold rounded-lg transition-all ${isSubActive
-                                  ? 'bg-amber-100 text-black font-bold'
-                                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                ? 'bg-amber-100 text-black font-bold'
+                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                 }`}
                             >
                               <sub.icon size={15} className={isSubActive ? 'text-black' : 'text-gray-500'} />

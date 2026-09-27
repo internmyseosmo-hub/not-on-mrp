@@ -41,7 +41,7 @@ const AdminLogin = ({ onLogin }) => {
 
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img src="/new.jpeg" alt="NOT ON MRP Logo" className="h-16 w-auto object-contain" />
+          <img src="/notonmrp.png" alt="NOT ON MRP Logo" className="h-16 w-auto object-contain" />
         </div>
 
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Admin Login</h2>

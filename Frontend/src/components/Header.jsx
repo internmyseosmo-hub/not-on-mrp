@@ -80,7 +80,7 @@ export default function Header({
         {/* Logo */}
         <Link to="/" className="flex shrink-0 items-center cursor-pointer">
           <img
-            src="/new.jpeg"
+            src="/notonmrp.png"
             alt="NOT ON MRP - Everyday Essentials, Always Low Prices!"
             className="h-10 w-auto max-w-[120px] object-contain transition-transform hover:scale-105 xs:h-12 sm:h-14 md:h-16 md:max-w-[160px] lg:h-20"
           />

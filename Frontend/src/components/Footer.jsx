@@ -18,7 +18,7 @@ export default function Footer() {
           <div className="space-y-4 lg:col-span-2">
             <Link to="/" className="flex items-center text-left">
               <img
-                src="/new.jpeg"
+                src="/notonmrp.png"
                 alt="NOT ON MRP Logo"
                 className="h-20 w-auto max-w-[250px] object-contain transition-transform hover:scale-105 sm:h-24 md:h-28"
               />

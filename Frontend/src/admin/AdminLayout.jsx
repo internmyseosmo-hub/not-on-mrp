@@ -30,7 +30,7 @@ const AdminLayout = ({ children, activePage = 'dashboard', onLogout }) => {
 
         {/* Logo Area */}
         <div className="h-16 flex items-center justify-center bg-[#1E1E1E]">
-          <img src="/new.jpeg" alt="NOT ON MRP Logo" className="h-8 w-auto object-contain" />
+          <img src="/notonmrp.png" alt="NOT ON MRP Logo" className="h-8 w-auto object-contain" />
         </div>
 
         {/* Navigation Items */}

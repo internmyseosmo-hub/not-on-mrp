@@ -175,12 +175,12 @@ export default function Footer() {
         <div className="mt-6 border-t border-amber-300/50 pt-6 text-center text-xs font-medium text-brand-ink/70 sm:flex sm:items-center sm:justify-between sm:text-left">
           <p>© {new Date().getFullYear()} Not On MRP Retail Ltd. All rights reserved.</p>
           <div className="mt-3 flex justify-center gap-4 sm:mt-0">
-            <a href="#" className="hover:underline">
+            <Link to="/privacy-policy" className="hover:underline">
               Privacy Policy
-            </a>
-            <a href="#" className="hover:underline">
+            </Link>
+            <Link to="/terms-and-conditions" className="hover:underline">
               Terms of Service
-            </a>
+            </Link>
             <a href="#" className="hover:underline">
               Refund Policy
             </a>

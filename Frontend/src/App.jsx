@@ -28,6 +28,8 @@ import BlogPostPage from "./components/BlogPostPage.jsx";
 import FranchisePage from "./components/FranchisePage.jsx";
 import FranchiseApplicationPage from "./components/FranchiseApplicationPage.jsx";
 import TrackOrderPage from "./components/TrackOrderPage.jsx";
+import TermsandConditions from "./components/TermsandConditions.jsx";
+import PrivacyPolicy from "./components/PrivacyPolicy.jsx";
 import AdminHome from "./admin/Home.jsx";
 import AdminDeals from "./admin/DealsAndOffers.jsx";
 import AdminLogin from "./admin/Login.jsx";
@@ -209,6 +211,8 @@ export default function App() {
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/account" element={<AccountPage user={currentUser} onLogout={handleLogout} onUpdateUser={(updatedUser) => setCurrentUser({ ...currentUser, ...updatedUser })} />} />
           <Route path="/track-order" element={<TrackOrderPage />} />
+          <Route path="/terms-and-conditions" element={<TermsandConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
           {/* Admin Routes */}
           <Route path="/admin/*" element={
